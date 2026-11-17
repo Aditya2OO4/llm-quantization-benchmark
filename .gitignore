@@ -1,0 +1,10 @@
+# big or machine-specific, never commit
+env/
+models/
+llama.cpp/
+data/
+docs/
+__pycache__/
+.pytest_cache/
+*.gguf
+*.safetensors
