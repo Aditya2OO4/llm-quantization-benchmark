@@ -1,0 +1,1116 @@
+{
+  "hardware": {
+    "cpu": "AMD Ryzen 5 7520U with Radeon Graphics",
+    "physical_cores": 4,
+    "logical_cores": 8,
+    "ram_gb": 7.2,
+    "os": "Windows 11"
+  },
+  "settings": {
+    "threads": 4,
+    "repeats": 3,
+    "max_tokens": 128
+  },
+  "configs": [
+    {
+      "kind": "main",
+      "label": "F16",
+      "threads": 4,
+      "file_mb": 2099.054962158203,
+      "load_s": 0.9907705999794416,
+      "peak_rss_mb": 2065.70703125,
+      "rss_after_load_mb": 2010.125,
+      "baseline_rss_mb": 39.53125,
+      "summary": {
+        "decode_tps": {
+          "mean": 12.49856625734745,
+          "std": 0.7229959918550143,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 3.338191655548548,
+          "std": 4.041830254327725,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 42.63476419338721,
+          "std": 0.6051629960576943,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.7343288999982178,
+          "prompt_tps": 38.13005316836632,
+          "decode_tps": 10.82008389211912,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (inputs) and generate output data (outputs). The network is trained using a set of training data, which is a collection of examples of input-output pairs.\n\nThe input data is typically represented as a vector, which is a sequence of numbers or values. The network processes the input data by applying a series of operations called \"activations\" to each neuron. These operations are based on the properties of the"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.6132347999955527,
+          "prompt_tps": 45.65950921278939,
+          "decode_tps": 13.580204484494367,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (inputs) and generate output data (outputs). The network is trained using a set of training data, which is a collection of examples of input-output pairs.\n\nThe input data is typically represented as a vector, which is a sequence of numbers or values. The network processes the input data by applying a series of operations called \"activations\" to each neuron. These operations are based on the properties of the"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.6390105999889784,
+          "prompt_tps": 43.81773948739339,
+          "decode_tps": 12.58968764606399,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (inputs) and generate output data (outputs). The network is trained using a set of training data, which is a collection of examples of input-output pairs.\n\nThe input data is typically represented as a vector, which is a sequence of numbers or values. The network processes the input data by applying a series of operations called \"activations\" to each neuron. These operations are based on the properties of the"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.6266077000182122,
+          "prompt_tps": 43.08916088840793,
+          "decode_tps": 12.48030887332811,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"olle"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.6164462000015192,
+          "prompt_tps": 43.79944267631703,
+          "decode_tps": 12.646155452249014,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"olle"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.6347469999454916,
+          "prompt_tps": 42.536632709281974,
+          "decode_tps": 12.780623624534398,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"olle"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 8.859505700005684,
+          "prompt_tps": 41.988798539828394,
+          "decode_tps": 12.576628556012892,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also reduce the quality of the model's answers. Fewer bits means a smaller file and less memory traffic, which can make inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 8.61339469999075,
+          "prompt_tps": 43.188546787528445,
+          "decode_tps": 12.308787946351014,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also reduce the quality of the model's answers. Fewer bits means a smaller file and less memory traffic, which can make inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 8.706449299992528,
+          "prompt_tps": 42.7269472528048,
+          "decode_tps": 12.70461584097415,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also reduce the quality of the model's answers. Fewer bits means a smaller file and less memory traffic, which can make inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the"
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "label": "Q8_0",
+      "threads": 4,
+      "file_mb": 1115.6174621582031,
+      "load_s": 1.4458677000366151,
+      "peak_rss_mb": 1179.1171875,
+      "rss_after_load_mb": 1128.23828125,
+      "baseline_rss_mb": 39.62109375,
+      "summary": {
+        "decode_tps": {
+          "mean": 21.98262694575052,
+          "std": 1.3797041375602959,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 2.4305895555622152,
+          "std": 2.8779157915267684,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 59.395646715929864,
+          "std": 1.5397981148304796,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.5749321000184864,
+          "prompt_tps": 48.701403172826296,
+          "decode_tps": 22.546167049596942,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that process information and make decisions based on patterns and relationships.\n\nThe basic building blocks of a neural network are called neurons, which are connected by synapses. Each neuron has a set of inputs (or inputs that it receives from other neurons) and a set of outputs (or outputs that it produces based on the information it receives from other neurons).\n\nThe inputs to a neuron are usually represented as numbers or"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.4850216000340879,
+          "prompt_tps": 57.72938771805653,
+          "decode_tps": 23.744348821652896,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that process information and make decisions based on patterns and relationships.\n\nThe basic building blocks of a neural network are called neurons, which are connected by synapses. Each neuron has a set of inputs (or inputs that it receives from other neurons) and a set of outputs (or outputs that it produces based on the information it receives from other neurons).\n\nThe inputs to a neuron are usually represented as numbers or"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.44545530003961176,
+          "prompt_tps": 62.85703637943049,
+          "decode_tps": 23.49222462856925,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that process information and make decisions based on patterns and relationships.\n\nThe basic building blocks of a neural network are called neurons, which are connected by synapses. Each neuron has a set of inputs (or inputs that it receives from other neurons) and a set of outputs (or outputs that it produces based on the information it receives from other neurons).\n\nThe inputs to a neuron are usually represented as numbers or"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.47895870002685115,
+          "prompt_tps": 56.37229263919068,
+          "decode_tps": 20.951763036472126,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello world\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"ol"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.5397662000032142,
+          "prompt_tps": 50.0216575247565,
+          "decode_tps": 20.27911632802452,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello world\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"ol"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.5534631999908015,
+          "prompt_tps": 48.78373124075591,
+          "decode_tps": 22.682574902970728,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello world\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"ol"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 6.248690299980808,
+          "prompt_tps": 59.53247514941532,
+          "decode_tps": 21.748222472488212,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also result in lower quality model answers. Fewer bits means a smaller file and less memory traffic, which can make inference faster on CPUs, but it also introduces rounding error that can affect the model's accuracy. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model'"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 6.436876999970991,
+          "prompt_tps": 57.792000686307425,
+          "decode_tps": 19.82251110844736,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also result in lower quality model answers. Fewer bits means a smaller file and less memory traffic, which can make inference faster on CPUs, but it also introduces rounding error that can affect the model's accuracy. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model'"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 6.112141599995084,
+          "prompt_tps": 60.862464312066855,
+          "decode_tps": 22.576714163532646,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also result in lower quality model answers. Fewer bits means a smaller file and less memory traffic, which can make inference faster on CPUs, but it also introduces rounding error that can affect the model's accuracy. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model'"
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "label": "Q6_K",
+      "threads": 4,
+      "file_mb": 861.5627746582031,
+      "load_s": 1.273095300013665,
+      "peak_rss_mb": 940.16015625,
+      "rss_after_load_mb": 892.3359375,
+      "baseline_rss_mb": 39.46875,
+      "summary": {
+        "decode_tps": {
+          "mean": 22.130361555316213,
+          "std": 3.8206029947268885,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.689808455573964,
+          "std": 1.920657410806971,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 87.55378325715803,
+          "std": 1.7016894822493893,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.43218720000004396,
+          "prompt_tps": 64.7867405605653,
+          "decode_tps": 22.649101307785116,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (input nodes) and generate output data (output nodes). Each node in the network has a set of inputs and outputs, and the network learns to recognize patterns and make predictions based on the input data.\n\nThe neural network is made up of several layers, each with its own set of neurons. The input nodes are connected to the first layer, which is called the input layer. The input layer receives the input data"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.4375805000308901,
+          "prompt_tps": 63.98822616186827,
+          "decode_tps": 21.598236876525633,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (input nodes) and generate output data (output nodes). Each node in the network has a set of inputs and outputs, and the network learns to recognize patterns and make predictions based on the input data.\n\nThe neural network is made up of several layers, each with its own set of neurons. The input nodes are connected to the first layer, which is called the input layer. The input layer receives the input data"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.4459599000401795,
+          "prompt_tps": 62.785914153889834,
+          "decode_tps": 25.069666530725275,
+          "text": "A neural network is a type of artificial intelligence (AI) system that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (input nodes) and generate output data (output nodes). Each node in the network has a set of inputs and outputs, and the network learns to recognize patterns and make predictions based on the input data.\n\nThe neural network is made up of several layers, each with its own set of neurons. The input nodes are connected to the first layer, which is called the input layer. The input layer receives the input data"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3707132999552414,
+          "prompt_tps": 72.8325636098297,
+          "decode_tps": 26.25347690594621,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"olle"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3798351000295952,
+          "prompt_tps": 71.0834780616543,
+          "decode_tps": 26.165146866592476,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"olle"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3923738000448793,
+          "prompt_tps": 68.81193391840068,
+          "decode_tps": 24.86787911220148,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(string):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        string (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return string[::-1]\n```\n\nHere's an example usage:\n\n```python\nstring = \"hello\"\nreversed_string = reverse_string(string)\nprint(reversed_string)  # Output: \"olle"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.155610200017691,
+          "prompt_tps": 89.51753944545048,
+          "decode_tps": 18.334672654716847,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also reduce the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.294074400037061,
+          "prompt_tps": 86.63100946662436,
+          "decode_tps": 18.153549583615387,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also reduce the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.299941700010095,
+          "prompt_tps": 86.51280085939925,
+          "decode_tps": 16.081524159737466,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs but can also reduce the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes"
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "label": "Q5_K_M",
+      "threads": 4,
+      "file_mb": 745.8166809082031,
+      "load_s": 0.855707100010477,
+      "peak_rss_mb": 832.84765625,
+      "rss_after_load_mb": 784.94140625,
+      "baseline_rss_mb": 39.421875,
+      "summary": {
+        "decode_tps": {
+          "mean": 22.97886229219295,
+          "std": 1.2219365888862859,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.7537666666709508,
+          "std": 2.002134894200029,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 84.13934742236728,
+          "std": 1.6202673574034532,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.402170599962119,
+          "prompt_tps": 69.62219516453305,
+          "decode_tps": 23.908674885950777,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (inputs) and generate output data (outputs). The network is trained using a set of training data (inputs and outputs) to learn how to recognize patterns and make predictions.\n\nThe neural network is made up of several layers, each with a set of neurons that connect to the next layer. The input data is first processed by the neurons in the first layer, which are called the input neurons."
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.42310539999743924,
+          "prompt_tps": 66.17736384401964,
+          "decode_tps": 20.856955135128437,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (inputs) and generate output data (outputs). The network is trained using a set of training data (inputs and outputs) to learn how to recognize patterns and make predictions.\n\nThe neural network is made up of several layers, each with a set of neurons that connect to the next layer. The input data is first processed by the neurons in the first layer, which are called the input neurons."
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.390177900029812,
+          "prompt_tps": 71.76213721448761,
+          "decode_tps": 24.489561372818237,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain works. It consists of a series of interconnected nodes (neurons) that receive input data (inputs) and generate output data (outputs). The network is trained using a set of training data (inputs and outputs) to learn how to recognize patterns and make predictions.\n\nThe neural network is made up of several layers, each with a set of neurons that connect to the next layer. The input data is first processed by the neurons in the first layer, which are called the input neurons."
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3910471000126563,
+          "prompt_tps": 69.04539120511606,
+          "decode_tps": 23.004820035230136,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverses a string.\n\n    :param s: The string to reverse.\n    :return: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's how you can use it:\n\n```python\ns = \"hello\"\nprint(reverse_string(s))  # Output: \"olleh\"\n```\n\nThis function takes a string as input and returns the reversed string."
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.497917500033509,
+          "prompt_tps": 54.225850664383046,
+          "decode_tps": 21.553495878777596,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverses a string.\n\n    :param s: The string to reverse.\n    :return: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's how you can use it:\n\n```python\ns = \"hello\"\nprint(reverse_string(s))  # Output: \"olleh\"\n```\n\nThis function takes a string as input and returns the reversed string."
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.4124833000241779,
+          "prompt_tps": 65.45719547534988,
+          "decode_tps": 24.036914644462524,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverses a string.\n\n    :param s: The string to reverse.\n    :return: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's how you can use it:\n\n```python\ns = \"hello\"\nprint(reverse_string(s))  # Output: \"olleh\"\n```\n\nThis function takes a string as input and returns the reversed string."
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.340815800009295,
+          "prompt_tps": 85.69817682639365,
+          "decode_tps": 23.026236765066596,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs, but it also introduces rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.5110627000103705,
+          "prompt_tps": 82.46393915099979,
+          "decode_tps": 22.211099572067265,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs, but it also introduces rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.4151196999591775,
+          "prompt_tps": 84.25592628970841,
+          "decode_tps": 23.72200234023498,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to slower inference on CPUs, but it also introduces rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file"
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "label": "Q4_K_M",
+      "threads": 4,
+      "file_mb": 636.8791809082031,
+      "load_s": 1.3319391999975778,
+      "peak_rss_mb": 1186.87109375,
+      "rss_after_load_mb": 1138.86328125,
+      "baseline_rss_mb": 39.3984375,
+      "summary": {
+        "decode_tps": {
+          "mean": 27.58774703557744,
+          "std": 1.2064564028946076,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.5526091888960865,
+          "std": 1.7374705642011539,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 96.73668272834693,
+          "std": 6.751177346448361,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.5465538999997079,
+          "prompt_tps": 51.230079961033965,
+          "decode_tps": 26.569240539275224,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.30407760001253337,
+          "prompt_tps": 92.08175807374796,
+          "decode_tps": 29.31137088466304,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.35893560003023595,
+          "prompt_tps": 78.0084226742662,
+          "decode_tps": 29.078735071480143,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.30816800001775846,
+          "prompt_tps": 87.61454790388392,
+          "decode_tps": 28.804234830581322,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.5604339000419714,
+          "prompt_tps": 48.176957171894756,
+          "decode_tps": 26.75388968407829,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.32022170000709593,
+          "prompt_tps": 84.31658441449063,
+          "decode_tps": 27.380266847675063,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.167187299986836,
+          "prompt_tps": 89.2688456794767,
+          "decode_tps": 27.32152033990955,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.632542999985162,
+          "prompt_tps": 102.40759710250354,
+          "decode_tps": 27.20916048032292,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.7753616999834776,
+          "prompt_tps": 98.53360540306059,
+          "decode_tps": 25.861304642211426,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "label": "Q3_K_M",
+      "threads": 4,
+      "file_mb": 523.0002746582031,
+      "load_s": 0.9731048999819905,
+      "peak_rss_mb": 811.03125,
+      "rss_after_load_mb": 763.54296875,
+      "baseline_rss_mb": 39.5859375,
+      "summary": {
+        "decode_tps": {
+          "mean": 26.33599182690749,
+          "std": 2.6082451755491087,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.6215700888812232,
+          "std": 1.8702937941745572,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 90.77039168497924,
+          "std": 5.684802489577724,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.3907304999884218,
+          "prompt_tps": 71.66064589488074,
+          "decode_tps": 26.751612374470486,
+          "text": "A neural network is a mathematical model that simulates the behavior of the human brain. It consists of a series of layers of neurons, each with its own set of connections to other neurons. The layers are connected in a way that allows the network to learn and make predictions based on input data.\n\nThe input data is typically represented as a vector, which is a sequence of numbers. The output of the network is a single value, which represents the probability of the input data being classified as a certain category. The network is trained using a set of training data, which is a collection of input-output pairs."
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.353250999993179,
+          "prompt_tps": 79.2637529703827,
+          "decode_tps": 27.135637720169683,
+          "text": "A neural network is a mathematical model that simulates the behavior of the human brain. It consists of a series of layers of neurons, each with its own set of connections to other neurons. The layers are connected in a way that allows the network to learn and make predictions based on input data.\n\nThe input data is typically represented as a vector, which is a sequence of numbers. The output of the network is a single value, which represents the probability of the input data being classified as a certain category. The network is trained using a set of training data, which is a collection of input-output pairs."
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.382141700014472,
+          "prompt_tps": 73.27124990269216,
+          "decode_tps": 25.875418376882845,
+          "text": "A neural network is a mathematical model that simulates the behavior of the human brain. It consists of a series of layers of neurons, each with its own set of connections to other neurons. The layers are connected in a way that allows the network to learn and make predictions based on input data.\n\nThe input data is typically represented as a vector, which is a sequence of numbers. The output of the network is a single value, which represents the probability of the input data being classified as a certain category. The network is trained using a set of training data, which is a collection of input-output pairs."
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.45189560001017526,
+          "prompt_tps": 59.748313547182235,
+          "decode_tps": 26.039594412944318,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        s (str): A string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's how you can use the function:\n\n```python\ns = \"hello\"\nprint(reverse_string(s))  # Output: \"olleh\"\n```\n\nNote that this function"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.34916529996553436,
+          "prompt_tps": 77.32727164659585,
+          "decode_tps": 28.739295800094215,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        s (str): A string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's how you can use the function:\n\n```python\ns = \"hello\"\nprint(reverse_string(s))  # Output: \"olleh\"\n```\n\nNote that this function"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.33995400002459064,
+          "prompt_tps": 79.42251009856318,
+          "decode_tps": 29.662896364513713,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverses a string.\n\n    Args:\n        s (str): A string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's how you can use the function:\n\n```python\ns = \"hello\"\nprint(reverse_string(s))  # Output: \"olleh\"\n```\n\nNote that this function"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.3700706999516115,
+          "prompt_tps": 85.12448093897406,
+          "decode_tps": 21.77258836595843,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which means a smaller file and less memory traffic, making inference faster on CPUs but also introducing rounding error that can lower the quality of the model's answers. This is because the rounding error occurs when the model is training on a smaller dataset, which results in a smaller file size and less memory traffic. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits mean a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.101732199953403,
+          "prompt_tps": 90.69339046664871,
+          "decode_tps": 22.847427791492507,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which means a smaller file and less memory traffic, making inference faster on CPUs but also introducing rounding error that can lower the quality of the model's answers. This is because the rounding error occurs when the model is training on a smaller dataset, which results in a smaller file size and less memory traffic. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits mean a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.8551898000296205,
+          "prompt_tps": 96.49330364931497,
+          "decode_tps": 28.199455235641235,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which means a smaller file and less memory traffic, making inference faster on CPUs but also introducing rounding error that can lower the quality of the model's answers. This is because the rounding error occurs when the model is training on a smaller dataset, which results in a smaller file size and less memory traffic. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits mean a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that"
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "label": "Q2_K",
+      "threads": 4,
+      "file_mb": 412.1135559082031,
+      "load_s": 0.5059008999960497,
+      "peak_rss_mb": 527.64453125,
+      "rss_after_load_mb": 479.95703125,
+      "baseline_rss_mb": 39.44140625,
+      "summary": {
+        "decode_tps": {
+          "mean": 32.40746986692444,
+          "std": 1.2938330338946,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.695314166659955,
+          "std": 1.988495323409997,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 85.60789064839513,
+          "std": 1.4033365546760181,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.35585300001548603,
+          "prompt_tps": 78.68417576578389,
+          "decode_tps": 33.77140788174448,
+          "text": "A neural network is a mathematical model that maps a set of input data (or \"input vector\") to a set of output data (or \"output vector\") to represent a complex or non-linear function. It is a type of artificial intelligence (AI) algorithm that is commonly used in computer vision, natural language processing, and machine learning.\n\nThe neural network is a mathematical model that maps a set of input data (or \"input vector\") to a set of output data (or \"output vector\") to represent a complex or non-linear function. It is a type of artificial intelligence (AI) algorithm that is commonly used"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.38244570000097156,
+          "prompt_tps": 73.21300775490185,
+          "decode_tps": 30.86097853318058,
+          "text": "A neural network is a mathematical model that maps a set of input data (or \"input vector\") to a set of output data (or \"output vector\") to represent a complex or non-linear function. It is a type of artificial intelligence (AI) algorithm that is commonly used in computer vision, natural language processing, and machine learning.\n\nThe neural network is a mathematical model that maps a set of input data (or \"input vector\") to a set of output data (or \"output vector\") to represent a complex or non-linear function. It is a type of artificial intelligence (AI) algorithm that is commonly used"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.383418100012932,
+          "prompt_tps": 73.02732969323986,
+          "decode_tps": 32.981424991327295,
+          "text": "A neural network is a mathematical model that maps a set of input data (or \"input vector\") to a set of output data (or \"output vector\") to represent a complex or non-linear function. It is a type of artificial intelligence (AI) algorithm that is commonly used in computer vision, natural language processing, and machine learning.\n\nThe neural network is a mathematical model that maps a set of input data (or \"input vector\") to a set of output data (or \"output vector\") to represent a complex or non-linear function. It is a type of artificial intelligence (AI) algorithm that is commonly used"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.38199709996115416,
+          "prompt_tps": 70.68116486419837,
+          "decode_tps": 31.840163382544,
+          "text": "Reversing a string in Python involves finding the reversed string and then reversing it. Here's a Python function that does just that:\n\n```python\ndef reverse_string(string):\n    return string.rstrip().rfind(string)\n\n# Example usage:\nprint(reverse_string(\"hello world\")) # Output: \"l_o_d_r_e_r_s_h_t_h_o_w_l_o_n_h_o_l_h_o_l_h_o_l_h_o_l"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.359100200003013,
+          "prompt_tps": 75.18792804842063,
+          "decode_tps": 34.1605558500049,
+          "text": "Reversing a string in Python involves finding the reversed string and then reversing it. Here's a Python function that does just that:\n\n```python\ndef reverse_string(string):\n    return string.rstrip().rfind(string)\n\n# Example usage:\nprint(reverse_string(\"hello world\")) # Output: \"l_o_d_r_e_r_s_h_t_h_o_w_l_o_n_h_o_l_h_o_l_h_o_l_h_o_l"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3564928999985568,
+          "prompt_tps": 75.73783376922599,
+          "decode_tps": 33.901581679746215,
+          "text": "Reversing a string in Python involves finding the reversed string and then reversing it. Here's a Python function that does just that:\n\n```python\ndef reverse_string(string):\n    return string.rstrip().rfind(string)\n\n# Example usage:\nprint(reverse_string(\"hello world\")) # Output: \"l_o_d_r_e_r_s_h_t_h_o_w_l_o_n_h_o_l_h_o_l_h_o_l_h_o_l"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.277192999958061,
+          "prompt_tps": 86.97292827413857,
+          "decode_tps": 31.51968643896388,
+          "text": "In the given text, the author discusses the benefits and drawbacks of using quantization to reduce the number of bits used to store each weight of a neural network. The author notes that quantization reduces the number of bits used to store each weight, which can lead to faster inference on CPUs and lowering the quality of the model's predictions. The author also mentions that quantization can add rounding error to the model's predictions, which can lower the quality of the model's answers. The author concludes that quantization reduces the number of bits used to store each weight of a neural network, but it"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.341656400007196,
+          "prompt_tps": 85.68158456744376,
+          "decode_tps": 31.241181131468007,
+          "text": "In the given text, the author discusses the benefits and drawbacks of using quantization to reduce the number of bits used to store each weight of a neural network. The author notes that quantization reduces the number of bits used to store each weight, which can lead to faster inference on CPUs and lowering the quality of the model's predictions. The author also mentions that quantization can add rounding error to the model's predictions, which can lower the quality of the model's answers. The author concludes that quantization reduces the number of bits used to store each weight of a neural network, but it"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 4.419671099982224,
+          "prompt_tps": 84.16915910360302,
+          "decode_tps": 31.390248913340585,
+          "text": "In the given text, the author discusses the benefits and drawbacks of using quantization to reduce the number of bits used to store each weight of a neural network. The author notes that quantization reduces the number of bits used to store each weight, which can lead to faster inference on CPUs and lowering the quality of the model's predictions. The author also mentions that quantization can add rounding error to the model's predictions, which can lower the quality of the model's answers. The author concludes that quantization reduces the number of bits used to store each weight of a neural network, but it"
+        }
+      ]
+    },
+    {
+      "kind": "thread_sweep",
+      "label": "Q4_K_M",
+      "threads": 1,
+      "file_mb": 636.8791809082031,
+      "load_s": 1.5071380999870598,
+      "peak_rss_mb": 1162.83203125,
+      "rss_after_load_mb": 1138.9453125,
+      "baseline_rss_mb": 39.40234375,
+      "summary": {
+        "decode_tps": {
+          "mean": 13.091885597866646,
+          "std": 0.4352390836691276,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.3676519666656128,
+          "std": 1.6194663973780985,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 105.81962992896844,
+          "std": 6.07625054013377,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.29133470001397654,
+          "prompt_tps": 96.10938895592156,
+          "decode_tps": 13.384898002953822,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.2864838999812491,
+          "prompt_tps": 97.7367314597178,
+          "decode_tps": 13.225086176529777,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.28984420001506805,
+          "prompt_tps": 96.6036235968992,
+          "decode_tps": 13.680967360311115,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.28404080000473186,
+          "prompt_tps": 95.05676649111749,
+          "decode_tps": 13.21224810773189,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.27719460002845153,
+          "prompt_tps": 97.40449488275996,
+          "decode_tps": 12.891340363951246,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.31116990000009537,
+          "prompt_tps": 86.76931798349302,
+          "decode_tps": 13.347786077851534,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.6050334999454208,
+          "prompt_tps": 103.18905497150914,
+          "decode_tps": 12.766058865159879,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.6649559999932535,
+          "prompt_tps": 101.50190070513392,
+          "decode_tps": 12.177513902261017,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.298810100008268,
+          "prompt_tps": 112.76793411026226,
+          "decode_tps": 13.141071524049545,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        }
+      ]
+    },
+    {
+      "kind": "thread_sweep",
+      "label": "Q4_K_M",
+      "threads": 2,
+      "file_mb": 636.8791809082031,
+      "load_s": 0.7682287999778055,
+      "peak_rss_mb": 1186.65625,
+      "rss_after_load_mb": 1138.796875,
+      "baseline_rss_mb": 39.265625,
+      "summary": {
+        "decode_tps": {
+          "mean": 22.50232898377462,
+          "std": 0.8137202958469367,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.3075563444484335,
+          "std": 1.5535398629258907,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 110.1199127714804,
+          "std": 1.5937606716095147,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.26794190000509843,
+          "prompt_tps": 104.50026666029916,
+          "decode_tps": 22.804983524605706,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.26417299994500354,
+          "prompt_tps": 105.9911497610624,
+          "decode_tps": 22.918852679987346,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.2662566999788396,
+          "prompt_tps": 105.1616729352736,
+          "decode_tps": 23.149039696656505,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.307250700017903,
+          "prompt_tps": 87.8761220020874,
+          "decode_tps": 23.425302732073774,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.2708627000101842,
+          "prompt_tps": 99.68149914692877,
+          "decode_tps": 23.42583809435929,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.25571140000829473,
+          "prompt_tps": 105.58778372463713,
+          "decode_tps": 22.14054086631788,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.4038715000497177,
+          "prompt_tps": 109.28732180241424,
+          "decode_tps": 21.48041134485736,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.3226883999886923,
+          "prompt_tps": 111.95753414652604,
+          "decode_tps": 21.763827647713644,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.4092508000321686,
+          "prompt_tps": 109.11488236550093,
+          "decode_tps": 21.41216426740008,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        }
+      ]
+    },
+    {
+      "kind": "thread_sweep",
+      "label": "Q4_K_M",
+      "threads": 4,
+      "file_mb": 636.8791809082031,
+      "load_s": 0.8658238000352867,
+      "peak_rss_mb": 1186.12109375,
+      "rss_after_load_mb": 1138.21484375,
+      "baseline_rss_mb": 39.4609375,
+      "summary": {
+        "decode_tps": {
+          "mean": 25.99871687430281,
+          "std": 1.3444360091904548,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.429143722227309,
+          "std": 1.6378405759142787,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 103.0254478150905,
+          "std": 2.422457653700521,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.3196894000284374,
+          "prompt_tps": 87.58501219467806,
+          "decode_tps": 26.712761815781416,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.32524840004043654,
+          "prompt_tps": 86.08804838553824,
+          "decode_tps": 27.03143523911554,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.3237131999921985,
+          "prompt_tps": 86.49631834807725,
+          "decode_tps": 26.44449294669755,
+          "text": "A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for processing a specific type of input (e.g., visual, auditory, or tactile) and producing a specific output (e.g., a prediction, a classification, or a decision).\n\nThe layers of a neural network are designed to mimic the way the human brain processes information. Each layer consists of a set of neurons, each of which is connected to the neurons in the next"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.33654490002663806,
+          "prompt_tps": 80.22703656440169,
+          "decode_tps": 27.494678805432432,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3620191999943927,
+          "prompt_tps": 74.58167964687564,
+          "decode_tps": 22.97982004481225,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3587806999566965,
+          "prompt_tps": 75.25488412074229,
+          "decode_tps": 25.944987433312196,
+          "text": "Here's a Python function that reverses a string:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Reverse a string.\n\n    Args:\n        s (str): The string to reverse.\n\n    Returns:\n        str: The reversed string.\n    \"\"\"\n    return s[::-1]\n```\n\nHere's an example usage:\n\n```python\ns = \"apple\"\nprint(reverse_string(s))  # Output: \"olle\"\n```\n\nThis function takes a string as input and returns"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.5933820999925956,
+          "prompt_tps": 103.5236414186976,
+          "decode_tps": 26.517475590821228,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.537464099994395,
+          "prompt_tps": 105.16007780844743,
+          "decode_tps": 25.88837223350931,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 128,
+          "ttft_s": 3.70545150001999,
+          "prompt_tps": 100.3926242181265,
+          "decode_tps": 24.97442775924338,
+          "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
+        }
+      ]
+    }
+  ]
+}
