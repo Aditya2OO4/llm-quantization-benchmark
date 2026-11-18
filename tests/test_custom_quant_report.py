@@ -73,3 +73,44 @@ def test_step6_markdown_includes_custom_section():
     custom = {"ppl": {"fp16": _ppl(10.0, [2.0, 2.2]), "int4": _ppl(11.0, [2.1, 2.3])}}
     md = step6_report.build_markdown(speed, [], None, None, custom, {"F16": {"ppl": 8.0}})
     assert "My quantizer vs llama.cpp" in md
+
+
+def test_pooled_sqnr_combines_tensors_by_energy():
+    # tensor a: noise 1, signal 100 (20 dB); tensor b: noise 1, signal 10000 (40 dB) -> pooled 10*log10(10100/2)
+    tensors = {"a": {"mse": 0.01, "numel": 100, "sqnr_db": 20.0}, "b": {"mse": 0.01, "numel": 100, "sqnr_db": 40.0}}
+    assert rep.pooled_sqnr(tensors) == pytest.approx(10 * __import__("math").log10(10100 / 2))
+    assert rep.pooled_sqnr({}) is None
+
+
+def _ppl_entry(ppl, nll):
+    return {"ppl": ppl, "ppl_err": 0.2, "window_mean_nll": nll}
+
+
+def test_ladder_table_has_one_row_per_rung_and_the_llama_reference():
+    base = [2.0, 2.4, 2.2, 2.3]
+    custom = {
+        "ppl": {"fp16": _ppl_entry(8.0, base),
+                "int4_head8": _ppl_entry(8.5, [v + 0.06 for v in base]),
+                "int4s_head8": _ppl_entry(8.4, [v + 0.05 for v in base]),
+                "int4opt_head8": _ppl_entry(8.3, [v + 0.04 for v in base]),
+                "int4imp_head8": _ppl_entry(8.2, [v + 0.03 for v in base])},
+        "weights": {"int4": {"t": {"mse": 0.01, "numel": 100, "sqnr_db": 20.0}}},
+        "scheme_study": {"signed": {"t": {"mse": 0.008, "numel": 100, "sqnr_db": 21.0}},
+                         "opt": {"t": {"mse": 0.007, "numel": 100, "sqnr_db": 21.5}}},
+        "gguf_weight_compare": {"int4": {"summary": {"llama_cpp": {"sqnr_db": 21.13}}}},
+    }
+    md = "\n".join(rep.ladder_table(custom, {"F16": {"ppl": 8.0}, "Q4_0": {"ppl": 8.3}}))
+    assert md.count("\n| ") >= 5  # 4 rungs + reference (plus the header separator lines)
+    assert "| 0 | baseline" in md and "| 3 | + my importance weighting" in md
+    assert "+6.18%" in md and "-1.00%" in md  # rung 0 vs fp16; rung 1 improves on rung 0 by 0.01 in ln(ppl)
+    assert "llama.cpp Q4_0" in md and "21.13" in md
+    assert rep.ladder_table({"ppl": {"fp16": _ppl_entry(8.0, base)}}, None) == []  # nothing to show yet
+
+
+def test_export_lines():
+    custom = {"export": {"int4imp_head8": {"path": "/x/tinyllama-custom-int4imp_head8.safetensors", "mb": 640.2,
+                                           "avg_bits_per_param_on_disk": 4.66, "bit_identical_after_reload": True,
+                                           "windows_checked": 4}}}
+    md = "\n".join(rep.export_lines(custom))
+    assert "tinyllama-custom-int4imp_head8.safetensors" in md and "640 MB" in md and "yes (4 windows)" in md
+    assert rep.export_lines({}) == []

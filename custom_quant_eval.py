@@ -28,21 +28,29 @@ import custom_quant as cq
 
 LINEAR_NAMES = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj")
 _CHUNK_ELEMS = 4_000_000  # max weight elements dequantized at once (bounds temporary RAM)
-# name -> (default bits, per-tensor-kind overrides). llama.cpp keeps output.weight (lm_head) at
-# Q6_K inside its Q4_0 file, so "int4_head8" is the fairer match for Q4_0.
-VARIANTS: dict[str, tuple[int | None, dict[str, int | None]]] = {
-    "fp16": (None, {}),
-    "int8": (8, {}),
-    "int4": (4, {}),
-    "int4_head8": (4, {"lm_head": 8}),
+# name -> (default bits, per-tensor-kind overrides, scheme). llama.cpp keeps output.weight (lm_head)
+# at Q6_K inside its Q4_0 file, so the "_head8" variants (lm_head at int8) are the fairer match for Q4_0.
+# The int4 ladder, all with lm_head at int8, adds one idea per rung:
+#   int4_head8 (absmax) -> int4s_head8 (signed) -> int4opt_head8 (+ scale search) -> int4imp_head8 (+ importance)
+VARIANTS: dict[str, tuple[int | None, dict[str, int | None], str]] = {
+    "fp16": (None, {}, "absmax"),
+    "int8": (8, {}, "absmax"),
+    "int4": (4, {}, "absmax"),
+    "int4_head8": (4, {"lm_head": 8}, "absmax"),
+    "int4s_head8": (4, {"lm_head": 8}, "signed"),
+    "int4opt_head8": (4, {"lm_head": 8}, "opt"),
+    "int4imp_head8": (4, {"lm_head": 8}, "opt"),  # same encoder as int4opt_head8, but given importance
 }
+NEEDS_IMPORTANCE = {"int4imp_head8"}
 
 
 class _Compressed:
     """Weights of one 2-D tensor in storage form. bits=None keeps plain fp16 (the baseline)."""
 
-    def __init__(self, weight: torch.Tensor, bits: int | None) -> None:
+    def __init__(self, weight: torch.Tensor, bits: int | None, scheme: str = "absmax",
+                 importance: np.ndarray | None = None) -> None:
         self.bits, self.rows, self.cols = bits, weight.shape[0], weight.shape[1]
+        self.scheme = scheme if bits is not None else "fp16"
         if bits is None:
             self.w16, self.q, self.scales = weight.to(torch.float16), None, None
             return
@@ -50,10 +58,18 @@ class _Compressed:
         step = max(1, _CHUNK_ELEMS // self.cols)
         qs, ss = [], []
         for i in range(0, self.rows, step):
-            qt = cq.quantize(weight[i:i + step].float().numpy(), bits)
+            qt = cq.quantize(weight[i:i + step].float().numpy(), bits, scheme=scheme, importance=importance)
             qs.append(torch.from_numpy(cq.pack_int4(qt.q) if bits == 4 else qt.q))
             ss.append(torch.from_numpy(qt.scales))
         self.q, self.scales = torch.cat(qs), torch.cat(ss)
+
+    @classmethod
+    def from_stored(cls, bits, rows, cols, scheme, w16=None, q=None, scales=None) -> "_Compressed":
+        """Rebuild from tensors read back from an exported file (see custom_quant_export.py)."""
+        obj = cls.__new__(cls)
+        obj.bits, obj.rows, obj.cols, obj.scheme = bits, rows, cols, scheme
+        obj.w16, obj.q, obj.scales = w16, q, scales
+        return obj
 
     def rows_fp32(self, start: int, stop: int) -> torch.Tensor:
         if self.bits is None:
@@ -69,9 +85,11 @@ class _Compressed:
 
 
 class QLinear(nn.Module):
-    def __init__(self, weight: torch.Tensor, bits: int | None) -> None:
+    def __init__(self, weight: torch.Tensor | None, bits: int | None, scheme: str = "absmax",
+                 importance: np.ndarray | None = None, store: _Compressed | None = None) -> None:
         super().__init__()
-        self.store = _Compressed(weight, bits)  # plain attribute: model.float() leaves it alone
+        # plain attribute: model.float() leaves it alone
+        self.store = store or _Compressed(weight, bits, scheme, importance)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         s = self.store
@@ -81,9 +99,10 @@ class QLinear(nn.Module):
 
 
 class QEmbedding(nn.Module):
-    def __init__(self, weight: torch.Tensor, bits: int | None) -> None:
+    def __init__(self, weight: torch.Tensor | None, bits: int | None, scheme: str = "absmax",
+                 store: _Compressed | None = None) -> None:
         super().__init__()
-        self.store = _Compressed(weight, bits)
+        self.store = store or _Compressed(weight, bits, scheme)  # no importance: nothing multiplies the table
 
     def forward(self, ids: torch.Tensor) -> torch.Tensor:
         s = self.store  # only the looked-up rows are dequantized (block boundaries align with rows)
@@ -92,40 +111,47 @@ class QEmbedding(nn.Module):
         return rows[inverse]
 
 
-def quantize_model(model: nn.Module, bits: int | None, overrides: dict[str, int | None] | None = None) -> nn.Module:
+def quantize_model(model: nn.Module, bits: int | None, overrides: dict[str, int | None] | None = None,
+                   scheme: str = "absmax", importance: dict[str, np.ndarray] | None = None) -> nn.Module:
     """Swap every linear weight, the embedding table and lm_head for compressed layers.
 
     `overrides` maps a tensor kind (e.g. "lm_head", "down_proj") to its own bit width
-    (None = keep fp16) instead of the default `bits`.
+    (None = keep fp16) instead of the default `bits`. `scheme` picks the scale rule (custom_quant.SCHEMES).
+    `importance` maps a module path (e.g. "model.layers.3.mlp.down_proj", "lm_head") to a per-input-column
+    weight vector (see collect_importance); it is used only with scheme "opt".
     """
     overrides = overrides or {}
 
     def b(kind: str) -> int | None:
         return overrides.get(kind, bits)
 
-    for layer in model.model.layers:
-        for parent in (layer.self_attn, layer.mlp):
+    imp = importance or {}
+    for i, layer in enumerate(model.model.layers):
+        for part, parent in (("self_attn", layer.self_attn), ("mlp", layer.mlp)):
             for name in LINEAR_NAMES:
                 if hasattr(parent, name):
                     old = getattr(parent, name)
-                    setattr(parent, name, QLinear(old.weight.data, b(name)))
+                    path = f"model.layers.{i}.{part}.{name}"
+                    setattr(parent, name, QLinear(old.weight.data, b(name), scheme, imp.get(path)))
                     del old
         gc.collect()
     emb = model.model.embed_tokens
-    model.model.embed_tokens = QEmbedding(emb.weight.data, b("embed_tokens"))
+    model.model.embed_tokens = QEmbedding(emb.weight.data, b("embed_tokens"), scheme)
     head = model.lm_head
-    model.lm_head = QLinear(head.weight.data, b("lm_head"))
+    model.lm_head = QLinear(head.weight.data, b("lm_head"), scheme, imp.get("lm_head"))
     del emb, head
     gc.collect()
     return model.float()  # only the small norm weights are left as real parameters
 
 
-def load_model(model_dir: Path, variant: str) -> nn.Module:
+def load_model(model_dir: Path, variant: str, importance: dict[str, np.ndarray] | None = None) -> nn.Module:
     from transformers import AutoModelForCausalLM
 
+    if variant in NEEDS_IMPORTANCE and not importance:
+        raise ValueError(f"variant {variant!r} needs importance statistics (run: step9_custom_quant.py importance)")
     model = AutoModelForCausalLM.from_pretrained(str(model_dir), torch_dtype=torch.float16, low_cpu_mem_usage=True)
     model.eval()
-    return quantize_model(model, *VARIANTS[variant])
+    return quantize_model(model, *VARIANTS[variant], importance=importance if variant in NEEDS_IMPORTANCE else None)
 
 
 def build_windows(token_ids: list[int], n_ctx: int, n_chunks: int, bos_id: int) -> np.ndarray:
@@ -184,3 +210,37 @@ def paired_delta(nll_a: np.ndarray, nll_ref: np.ndarray) -> dict:
         "se_unpaired_pct": unpaired * 100,
         "windows": n,
     }
+
+
+@torch.inference_mode()
+def collect_importance(model: nn.Module, windows: np.ndarray, batch: int = 2) -> dict[str, np.ndarray]:
+    """Mean squared input activation per input column of every QLinear, over the given windows.
+
+    The output error caused by an error dw_j in input column j is about dw_j^2 * E[x_j^2], so
+    E[x_j^2] is how much that column matters. This is my own version of llama.cpp's importance
+    matrix: collected here with forward hooks on the fp16 model, used by scheme "opt" to pick scales.
+    Pass a model made with quantize_model(model, None) (fp16 weights, so no quantization noise in the stats).
+    """
+    sums: dict[str, torch.Tensor] = {}
+    counts: dict[str, int] = {}
+    hooks = []
+
+    def make_hook(name: str):
+        def hook(_module, args):
+            x = args[0].detach().float().reshape(-1, args[0].shape[-1])
+            sums[name] = sums.get(name, 0) + (x.double() ** 2).sum(0)
+            counts[name] = counts.get(name, 0) + x.shape[0]
+        return hook
+
+    for name, module in model.named_modules():
+        if isinstance(module, QLinear):
+            hooks.append(module.register_forward_pre_hook(make_hook(name)))
+    try:
+        for i in range(0, len(windows), batch):
+            model(input_ids=torch.from_numpy(windows[i:i + batch]), logits_to_keep=1)
+            print(f"    calibration windows {min(i + batch, len(windows))}/{len(windows)}", end="\r", flush=True)
+    finally:
+        for h in hooks:
+            h.remove()
+    print(" " * 40, end="\r")
+    return {name: (sums[name] / counts[name]).numpy() for name in sums}

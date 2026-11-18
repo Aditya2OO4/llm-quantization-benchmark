@@ -28,15 +28,22 @@ harness: the benchmark orchestration, the RAM and speed methodology, the report,
 
 | Used (not mine) | Built by me |
 |---|---|
-| llama.cpp quantization formats, `llama-quantize`, `llama-perplexity`, GGUF conversion | `custom_quant.py`: block-wise symmetric absmax int8 / int4 quantizer (block 32, fp16 scale per block) in NumPy, with round-trip, zero-block and odd-size handling |
-| `llama-cpp-python` inference, HuggingFace transformers and tokenizer, PyTorch | `custom_quant_eval.py`: runs the HF TinyLlama on my quantized weights (stored compressed, dequantized layer by layer) and scores it with the same window protocol as `llama-perplexity` |
+| llama.cpp quantization formats, `llama-quantize`, `llama-perplexity`, GGUF conversion | `custom_quant.py`: block-wise int8 / int4 quantizer (block 32, fp16 scale per block) in NumPy with three scale rules (symmetric absmax, signed anchoring, per-block scale search with optional importance weights), and round-trip, zero-block and odd-size handling |
+| `llama-cpp-python` inference, HuggingFace transformers and tokenizer, PyTorch | `custom_quant_eval.py`: runs the HF TinyLlama on my quantized weights (stored compressed, dequantized layer by layer), collects the importance statistics with forward hooks, and scores it with the same window protocol as `llama-perplexity`. `custom_quant_export.py`: writes and re-reads my quantized model as a `.safetensors` file |
 | llama.cpp's `llama-server` (parallel slots, continuous batching) | `step11_serving_compare.py` + the parametrized `step7_load_test.py`: starts one server at a time, same model, threads, prompt and load generator, plus a 1-slot control |
 | The importance-matrix algorithm itself (`llama-imatrix`, `llama-quantize --imatrix`) | `step10_imatrix.py`: the experiment design (calibration from the train split, a leakage check that refuses to run if any test paragraph is in the calibration text, the same test windows as the main sweep, the "gap closed" metric), run reproducibly |
 | The `gguf` package (only to read llama.cpp's tensors back) | `step9_custom_quant.py`, `gguf_compare.py`: per-tensor MSE and SQNR for every layer, a direct weight-error comparison with llama.cpp's Q8_0 / Q4_0, and the perplexity comparison |
 
-What my quantizer is not: it is not faster or smaller than llama.cpp's (it is a NumPy research implementation, not an
-inference format), and it is not a new method. It is the textbook scheme, built to check that I understand what Q8_0 and Q4_0 do,
-and to compare it against the real thing on equal terms.
+**What I can claim about my own quantizer.** I wrote block-wise int8 / int4 quantization from scratch (block of 32 weights,
+one fp16 scale each) and applied it to every weight matrix of TinyLlama: all attention and MLP projections, the embedding table
+and the output head. It has three ways of choosing the scales, the last using importance statistics that I collect myself.
+I saved the result as a real 622 MB file in my own format and checked that reloading it gives bit-identical outputs
+(`custom_quant_export.py`). I measured it against llama.cpp's Q8_0 / Q4_0 on identical tensors and on perplexity (Experiments 1 and 1b).
+
+**What I cannot claim.** None of my files can be run by llama.cpp (my own format, loaded by my own PyTorch code), and I did not
+measure inference speed for my quantizer, so there is no speed or deployment result. The ideas are not new: signed anchoring is what Q4_0 already does,
+the scale search is a standard technique, and importance weighting is the idea behind llama.cpp's imatrix. What is mine is the
+implementation, the measurements, and finding out which of those ideas helped on this model and which did not.
 
 ## Setup (Windows, no compiler needed)
 
@@ -64,6 +71,16 @@ My own quantizer (needs `pip install -r requirements-research.txt`; about 25 min
 python step9_custom_quant.py weights   # per-tensor MSE / SQNR + plot (~2 min)
 python step9_custom_quant.py gguf      # same error for llama.cpp's Q8_0 / Q4_0 tensors
 python step9_custom_quant.py ppl       # fp16, int8, int4, int4_head8 perplexity (~8-12 min each)
+python step6_report.py
+```
+
+The improved int4 (Experiment 1b, about 1 h in total on this machine) and the export:
+
+```powershell
+python step9_custom_quant.py schemes       # weight error of the signed / scale-search rules (~5 min)
+python step9_custom_quant.py importance    # activation statistics from WikiText-2 train text (~4 min)
+python step9_custom_quant.py ppl --variants int4s_head8,int4opt_head8,int4imp_head8   # ~11-13 min each
+python step9_custom_quant.py export --variant int4imp_head8    # writes models\tinyllama-custom-int4imp_head8.safetensors
 python step6_report.py
 ```
 
@@ -182,6 +199,31 @@ Direct weight error on identical tensors (reference = the F16 GGUF), pooled over
   (about 41 dB at int8, 17 dB at int4, vs about 45 and 20 dB elsewhere) and `v_proj` dips in layers 15 and 18. I did not test whether protecting those tensors would help perplexity.
 - Caveat: the paired SE is over 40 windows of one text; the stored ± for llama.cpp's numbers is a different (token-level, unpaired) quantity, so I do not give a paired SE for them.
 
+### Experiment 1b: making my int4 better, one idea at a time
+
+Experiment 1 showed my int4 losing to Q4_0 (+5.9% vs +3.6%). I tested two causes and one extra idea, adding one per rung, all in the same evaluator
+with the output head at int8 (so the rungs are comparable with each other and with Q4_0's Q6_K head). Each variant ran once on the same 40 windows;
+the grid and the weighting have no tunable settings that I fitted to the test windows (the scale grid was chosen from weight error on four tensors).
+
+| Rung | Idea added | Weight SQNR, all tensors at int4 | Perplexity | Δ vs fp16 (paired SE) | Δ vs previous rung (paired SE) |
+|---|---|---|---|---|---|
+| 0 | symmetric absmax, 15 levels | 20.02 dB | 9.291 | +5.15% (0.41%) | - |
+| 1 | signed anchoring: the biggest weight of each block sits on level -8, all 16 levels used (what Q4_0 does) | 21.08 dB | 9.145 | +3.50% (0.38%) | -1.57% (0.40%) |
+| 2 | per-block scale search: try 13 scale multipliers (0.9 to 1.2), keep the lowest squared error | 21.56 dB | 9.168 | +3.76% (0.37%) | +0.25% (0.36%) |
+| 3 | importance weighting: the search minimizes error weighted by how large each input column's activations are (collected on WikiText-2 **train**, 20 windows) | n/a (optimizes a weighted error) | 9.063 | +2.57% (0.31%) | -1.15% (0.24%) |
+| ref | llama.cpp Q4_0 (its own evaluator and tokenizer) | 21.13 dB | 9.155 | +3.62% | - |
+
+- **Expected:** signed anchoring buys about 1 dB (16 levels instead of 15). The scale search should help further. Importance weighting should help most, by analogy with the imatrix result in Experiment 2.
+- **Measured:** signed anchoring: +1.06 dB and -1.57% perplexity, which lands my int4 on top of Q4_0 (21.08 vs 21.13 dB, +3.50% vs +3.62%). So my explanation of the gap in Experiment 1 was right. The importance weighting gives the biggest remaining gain, -1.15% ± 0.24% against rung 2 (same encoder, only the weights differ), -2.45% ± 0.40% against rung 0.
+- **Surprising:** the scale search lowers weight error by another 0.5 dB but does **not** measurably help perplexity (+0.25% ± 0.36%, within noise). Lower weight error did not mean a better model here. My untested guess is that the lowest-error scale clips the largest weights, and those matter more than their share of the squared error. The importance statistics also span an enormous range: in layer 10's `down_proj` the largest column weight is 124x the median, and in layer 0's `q_proj` it is about 340,000x (a few channels carry huge activations), which is why weighting by activation changes the result while plain weight error does not.
+- **Honest comparison with llama.cpp:** my best int4 (+2.57%, 622 MB) beats plain Q4_0 (+3.62%, 607 MB), but not on equal footing: different evaluators, my file is 15 MB bigger (int8 head instead of Q6_K), and calibration and test text are both WikiText-2. It does **not** beat llama.cpp's best: Q4_K_M with imatrix reached +1.0% at 637 MB in Experiment 2. I did not run Q4_0 with an imatrix, which would be the like-for-like comparison.
+- **Caveats:** one run per rung; 40 windows; 20 calibration windows (10,240 tokens); only perplexity, no task accuracy.
+
+**Exported file.** `python step9_custom_quant.py export --variant int4imp_head8` writes `models/tinyllama-custom-int4imp_head8.safetensors`
+(packed int4 weights, fp16 block scales, int8 output head, fp16 norms): **622 MB on disk, 4.74 bits per parameter, 3.4x smaller than the 2099 MB F16 GGUF**.
+Reloading the file into a fresh model and scoring 4 test windows gave results identical to the in-memory model (checked bit for bit, not within a tolerance).
+The file only loads through `custom_quant_export.py`; llama.cpp cannot read it.
+
 ### Experiment 2: does an importance matrix recover the quality lost at low bit widths?
 
 Hypothesis: llama.cpp's imatrix recovers a large share of the perplexity lost at Q2_K, Q3_K_M and maybe Q4_K_M.
@@ -261,7 +303,9 @@ step6_report.py            tables + RESULTS.md      (report_plots.py = charts)
 step11_serving_compare.py  FastAPI vs llama-server load test (step7_load_test.py takes --format/--url/--out)
 step10_imatrix.py          importance-matrix experiment (imatrix_report.py = its RESULTS.md section)
 step9_custom_quant.py      my quantizer: weight error + perplexity (custom_quant.py = the quantizer,
-                           custom_quant_eval.py = HF evaluator, gguf_compare.py, custom_quant_report.py)
+                           custom_quant_eval.py = HF evaluator + importance statistics,
+                           custom_quant_export.py = save/load my quantized model as .safetensors,
+                           gguf_compare.py, custom_quant_report.py)
 step7_load_test.py         API concurrency test
 step8_compare.py           live side-by-side demo server (compare_ui.html = the page,
                            compare_checks.py = automatic answer checks)
@@ -277,6 +321,6 @@ pytest          # no model or GPU needed (the HF tests use a tiny random model)
 
 ## Limitations
 
-- In the main sweep llama.cpp does the conversion and quantization (see "What I built vs. what I used"). My own quantizer is a research implementation, not a new method and not an inference format.
+- In the main sweep llama.cpp does the conversion and quantization (see "What I built vs. what I used"). My own quantizer is a from-scratch implementation of known ideas (signed anchoring, scale search, importance weighting), with its own file format that only my code can load. It has no speed measurements and no llama.cpp integration.
 - Perplexity is a proxy for quality, not a task benchmark. Adding lm-eval-harness (HellaSwag, ARC) would be the next step.
 - One small model on one CPU. Results will differ on other hardware or with larger models.

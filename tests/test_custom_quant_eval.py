@@ -111,3 +111,51 @@ def test_paired_delta_is_tighter_than_unpaired_when_windows_differ_a_lot():
     d = ev.paired_delta(worse, ref)
     assert d["delta_pct"] == pytest.approx(3.0, abs=0.3)
     assert d["se_paired_pct"] < d["se_unpaired_pct"] / 5
+
+
+# ---- schemes and importance in the model path -----------------------------------------------------
+
+def test_every_variant_is_a_valid_triple():
+    for name, (bits, overrides, scheme) in ev.VARIANTS.items():
+        assert bits in (None, 4, 8) and scheme in cq.SCHEMES and isinstance(overrides, dict), name
+    assert ev.NEEDS_IMPORTANCE <= set(ev.VARIANTS)
+
+
+def test_better_schemes_give_lower_logit_error_on_a_tiny_model():
+    base = _tiny_model(seed=7)
+    reference = _logits(copy.deepcopy(base).float(), IDS)
+    errs = {}
+    for scheme in ("absmax", "signed", "opt"):
+        q = ev.quantize_model(copy.deepcopy(base), 4, {}, scheme)
+        errs[scheme] = float((_logits(q, IDS) - reference).abs().mean())
+    assert errs["opt"] < errs["absmax"]  # signed sits in between on average; only the ends are asserted (tiny model, noisy)
+
+
+def test_collect_importance_matches_an_independent_hook():
+    model = ev.quantize_model(_tiny_model(), None)
+    windows = np.random.default_rng(1).integers(1, 96, size=(3, 24)).astype(np.int64)
+    seen = []
+    h = model.model.layers[0].input_layernorm.register_forward_hook(lambda m, i, o: seen.append(o.detach().double()))
+    imp = ev.collect_importance(model, windows, batch=2)
+    h.remove()
+    expected = torch.cat([s.reshape(-1, 64) for s in seen]).pow(2).mean(0).numpy()
+    assert np.allclose(imp["model.layers.0.self_attn.q_proj"], expected, rtol=1e-4)
+    assert imp["model.layers.0.self_attn.k_proj"].shape == (64,) and imp["model.layers.0.mlp.down_proj"].shape == (128,)
+    assert "lm_head" in imp and all(np.all(v >= 0) for v in imp.values())
+    assert len(imp) == 2 * 7 + 1  # 7 linears in each of 2 layers + lm_head; the embedding has no input activations
+
+
+def test_importance_is_passed_to_the_layer_that_owns_it():
+    base = _tiny_model()
+    windows = np.random.default_rng(2).integers(1, 96, size=(2, 24)).astype(np.int64)
+    imp = ev.collect_importance(ev.quantize_model(copy.deepcopy(base), None), windows)
+    plain = ev.quantize_model(copy.deepcopy(base), 4, {}, "opt")
+    weighted = ev.quantize_model(copy.deepcopy(base), 4, {}, "opt", importance=imp)
+    a, b = plain.model.layers[0].mlp.up_proj.store, weighted.model.layers[0].mlp.up_proj.store
+    assert not torch.equal(a.scales, b.scales) or not torch.equal(a.q, b.q)  # importance changed the encoding
+    assert a.q.shape == b.q.shape and a.scales.shape == b.scales.shape       # ...but never the format
+
+
+def test_load_model_refuses_importance_variants_without_statistics(tmp_path):
+    with pytest.raises(ValueError, match="importance"):
+        ev.load_model(tmp_path, "int4imp_head8")

@@ -73,9 +73,28 @@ Each tool is compared with **its own** F16 baseline. Absolute perplexities diffe
 | mine (HF transformers) | int8 | 8.5 | 8.839 | +0.03% | 0.03% |
 | mine (HF transformers) | int4 | 4.5 | 9.359 | +5.92% | 0.42% |
 | mine (HF transformers) | int4_head8 | ~4.5 (lm_head 8.5) | 9.291 | +5.15% | 0.41% |
+| mine (HF transformers) | int4s_head8 | ~4.5 (lm_head 8.5) | 9.145 | +3.50% | 0.38% |
+| mine (HF transformers) | int4opt_head8 | ~4.5 (lm_head 8.5) | 9.168 | +3.76% | 0.37% |
+| mine (HF transformers) | int4imp_head8 | ~4.5 (lm_head 8.5) | 9.063 | +2.57% | 0.31% |
 | llama.cpp | F16 | 16 | 8.836 | - | n/a (stored ± is unpaired) |
 | llama.cpp | Q8_0 | 8.5 | 8.840 | +0.05% | n/a (stored ± is unpaired) |
 | llama.cpp | Q4_0 | 4.5 (output.weight Q6_K) | 9.155 | +3.62% | n/a (stored ± is unpaired) |
+
+### Improving my int4: one idea at a time (lm_head at int8 in every rung)
+
+| Rung | Idea added | Weight SQNR, all tensors at int4 (dB) | Perplexity | Δ vs fp16 (paired SE) | Δ vs previous rung |
+|---|---|---|---|---|---|
+| 0 | baseline: symmetric absmax, 15 levels | 20.02 | 9.291 | +5.15% (0.41%) | - |
+| 1 | + signed anchoring: all 16 levels (what Q4_0 does) | 21.08 | 9.145 | +3.50% (0.38%) | -1.57% |
+| 2 | + per-block scale search (min squared error) | 21.56 | 9.168 | +3.76% (0.37%) | +0.25% |
+| 3 | + my importance weighting (calibration on WikiText-2 train) | n/a (optimizes an activation-weighted error) | 9.063 | +2.57% (0.31%) | -1.15% |
+| ref | llama.cpp Q4_0 (own evaluator and tokenizer) | 21.13 (its 155 Q4_0 tensors) | 9.155 | +3.62% (n/a) | - |
+
+### Exported model files (my own format, no llama.cpp)
+
+| Variant | File | Size on disk | Bits per parameter (all params incl. norms) | Reloaded results bit-identical |
+|---|---|---|---|---|
+| int4imp_head8 | `tinyllama-custom-int4imp_head8.safetensors` | 622 MB | 4.74 | yes (4 windows) |
 
 Weight error on identical tensors (reference = the F16 GGUF):
 
