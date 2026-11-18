@@ -15,11 +15,11 @@ import psutil
 ROOT = Path(__file__).resolve().parent
 
 # The quantization levels we compare, from biggest/best to smallest/worst.
-QUANT_LEVELS = ["Q8_0", "Q6_K", "Q5_K_M", "Q4_K_M", "Q3_K_M", "Q2_K"]
+QUANT_LEVELS = ["Q8_0", "Q6_K", "Q5_K_M", "Q4_K_M", "Q4_0", "Q3_K_M", "Q2_K"]
 ALL_LABELS = ["F16", *QUANT_LEVELS]
 REFERENCE_LABEL = "F16"  # everything is compared against this
 # Nominal bits per weight (K-quants mix several widths, so this is the headline figure).
-BITS = {"F16": 16, "Q8_0": 8, "Q6_K": 6, "Q5_K_M": 5, "Q4_K_M": 4, "Q3_K_M": 3, "Q2_K": 2}
+BITS = {"F16": 16, "Q8_0": 8, "Q6_K": 6, "Q5_K_M": 5, "Q4_K_M": 4, "Q4_0": 4, "Q3_K_M": 3, "Q2_K": 2}
 
 HF_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
@@ -66,6 +66,15 @@ def raw_model_dir() -> Path:
 def model_path(label: str) -> Path:
     """'Q4_K_M' -> models/tinyllama-q4km.gguf  (matches the original naming)."""
     return models_dir() / f"tinyllama-{label.lower().replace('_', '')}.gguf"
+
+
+def imatrix_dir() -> Path:
+    return models_dir() / "imatrix"
+
+
+def imatrix_model_path(label: str, chunks: int) -> Path:
+    """'Q2_K', 50 -> models/imatrix/tinyllama-q2k-imat50.gguf (a quantized file made WITH an imatrix)."""
+    return imatrix_dir() / f"tinyllama-{label.lower().replace('_', '')}-imat{chunks}.gguf"
 
 
 def available_models(labels: list[str] | None = None) -> list[tuple[str, Path]]:

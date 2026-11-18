@@ -1111,6 +1111,116 @@
           "text": "Quantization, a technique used in neural networks to reduce the number of bits used to store each weight, reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the model's answers. Quantization reduces the number of bits used to store each weight of a neural network. Fewer bits means a smaller file and less memory traffic, which usually makes inference faster on CPUs, but it also adds rounding error that can lower the quality of the"
         }
       ]
+    },
+    {
+      "kind": "main",
+      "label": "Q4_0",
+      "threads": 4,
+      "file_mb": 607.2307434082031,
+      "load_s": 0.8157021999941207,
+      "peak_rss_mb": 1195.11328125,
+      "rss_after_load_mb": 1169.62890625,
+      "baseline_rss_mb": 39.5390625,
+      "summary": {
+        "decode_tps": {
+          "mean": 18.664687465350063,
+          "std": 1.9250189985300648,
+          "n": 9
+        },
+        "ttft_s": {
+          "mean": 1.9546802999943287,
+          "std": 2.3661044345101927,
+          "n": 9
+        },
+        "prompt_tps": {
+          "mean": 72.87712601843616,
+          "std": 2.228509298673437,
+          "n": 3
+        }
+      },
+      "runs": [
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.3914130000048317,
+          "prompt_tps": 71.53569247739436,
+          "decode_tps": 14.790947944546755,
+          "text": "A neural network is a type of artificial neural system that is designed to mimic the way the human brain processes information. It consists of a series of interconnected nodes (neurons) that are connected by synapses. Each node receives input from one or more input nodes, processes the information, and produces an output node.\n\nThe input nodes receive input from sensory organs (such as eyes, ears, or touch sensors) or from external sources (such as sensors or cameras). The output nodes produce the final output, which is usually a result or a decision.\n\nThe neural network is trained"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.3744940999895334,
+          "prompt_tps": 74.76753305534736,
+          "decode_tps": 19.361222946321178,
+          "text": "A neural network is a type of artificial neural system that is designed to mimic the way the human brain processes information. It consists of a series of interconnected nodes (neurons) that are connected by synapses. Each node receives input from one or more input nodes, processes the information, and produces an output node.\n\nThe input nodes receive input from sensory organs (such as eyes, ears, or touch sensors) or from external sources (such as sensors or cameras). The output nodes produce the final output, which is usually a result or a decision.\n\nThe neural network is trained"
+        },
+        {
+          "prompt_id": "short",
+          "prompt_tokens": 28,
+          "tokens_generated": 128,
+          "ttft_s": 0.37851949996547773,
+          "prompt_tps": 73.97241093934049,
+          "decode_tps": 18.588241772016097,
+          "text": "A neural network is a type of artificial neural system that is designed to mimic the way the human brain processes information. It consists of a series of interconnected nodes (neurons) that are connected by synapses. Each node receives input from one or more input nodes, processes the information, and produces an output node.\n\nThe input nodes receive input from sensory organs (such as eyes, ears, or touch sensors) or from external sources (such as sensors or cameras). The output nodes produce the final output, which is usually a result or a decision.\n\nThe neural network is trained"
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.37426589999813586,
+          "prompt_tps": 72.14122365979503,
+          "decode_tps": 19.770781605562824,
+          "text": "```python\ndef reverse_string(s):\n    \"\"\"\n    This function takes a string as input and reverses it.\n    It uses the built-in Python function 'reversed' to reverse the string.\n    \"\"\"\n    return s[::-1]\n```\n\nExplanation:\n\n1. The function takes a string as input.\n2. The 'reversed' built-in function is used to reverse the string.\n3. The function returns the reversed string.\n\nExample usage:\n\n```python\n>>> s = \"hello\""
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.3715787999681197,
+          "prompt_tps": 72.66291834280243,
+          "decode_tps": 16.958973718674432,
+          "text": "```python\ndef reverse_string(s):\n    \"\"\"\n    This function takes a string as input and reverses it.\n    It uses the built-in Python function 'reversed' to reverse the string.\n    \"\"\"\n    return s[::-1]\n```\n\nExplanation:\n\n1. The function takes a string as input.\n2. The 'reversed' built-in function is used to reverse the string.\n3. The function returns the reversed string.\n\nExample usage:\n\n```python\n>>> s = \"hello\""
+        },
+        {
+          "prompt_id": "code",
+          "prompt_tokens": 27,
+          "tokens_generated": 128,
+          "ttft_s": 0.37872000003699213,
+          "prompt_tps": 71.29277565843559,
+          "decode_tps": 19.135380921653308,
+          "text": "```python\ndef reverse_string(s):\n    \"\"\"\n    This function takes a string as input and reverses it.\n    It uses the built-in Python function 'reversed' to reverse the string.\n    \"\"\"\n    return s[::-1]\n```\n\nExplanation:\n\n1. The function takes a string as input.\n2. The 'reversed' built-in function is used to reverse the string.\n3. The function returns the reversed string.\n\nExample usage:\n\n```python\n>>> s = \"hello\""
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 64,
+          "ttft_s": 5.053254199970979,
+          "prompt_tps": 73.61592852426391,
+          "decode_tps": 17.821681852436154,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to faster inference on CPUs, but also introduces rounding errors that can lower the quality of the model's answers. This is a trade-off that depends on the specific use case and the available resources."
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 64,
+          "ttft_s": 5.286115300026722,
+          "prompt_tps": 70.37303934670503,
+          "decode_tps": 20.498338691191815,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to faster inference on CPUs, but also introduces rounding errors that can lower the quality of the model's answers. This is a trade-off that depends on the specific use case and the available resources."
+        },
+        {
+          "prompt_id": "long",
+          "prompt_tokens": 372,
+          "tokens_generated": 64,
+          "ttft_s": 4.983761899988167,
+          "prompt_tps": 74.64241018433951,
+          "decode_tps": 21.056617735747988,
+          "text": "Quantization reduces the number of bits used to store each weight of a neural network, which can lead to faster inference on CPUs, but also introduces rounding errors that can lower the quality of the model's answers. This is a trade-off that depends on the specific use case and the available resources."
+        }
+      ]
     }
   ]
 }
