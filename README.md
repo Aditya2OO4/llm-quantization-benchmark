@@ -30,6 +30,7 @@ harness: the benchmark orchestration, the RAM and speed methodology, the report,
 |---|---|
 | llama.cpp quantization formats, `llama-quantize`, `llama-perplexity`, GGUF conversion | `custom_quant.py`: block-wise symmetric absmax int8 / int4 quantizer (block 32, fp16 scale per block) in NumPy, with round-trip, zero-block and odd-size handling |
 | `llama-cpp-python` inference, HuggingFace transformers and tokenizer, PyTorch | `custom_quant_eval.py`: runs the HF TinyLlama on my quantized weights (stored compressed, dequantized layer by layer) and scores it with the same window protocol as `llama-perplexity` |
+| The importance-matrix algorithm itself (`llama-imatrix`, `llama-quantize --imatrix`) | `step10_imatrix.py`: the experiment design (calibration from the train split, a leakage check that refuses to run if any test paragraph is in the calibration text, the same test windows as the main sweep, the "gap closed" metric), run reproducibly |
 | The `gguf` package (only to read llama.cpp's tensors back) | `step9_custom_quant.py`, `gguf_compare.py`: per-tensor MSE and SQNR for every layer, a direct weight-error comparison with llama.cpp's Q8_0 / Q4_0, and the perplexity comparison |
 
 What my quantizer is not: it is not faster or smaller than llama.cpp's (it is a NumPy research implementation, not an
@@ -63,6 +64,13 @@ python step9_custom_quant.py weights   # per-tensor MSE / SQNR + plot (~2 min)
 python step9_custom_quant.py gguf      # same error for llama.cpp's Q8_0 / Q4_0 tensors
 python step9_custom_quant.py ppl       # fp16, int8, int4, int4_head8 perplexity (~8-12 min each)
 python step6_report.py
+```
+
+Importance-matrix experiment (about 1 h for the 50-chunk run: ~19 min for the imatrix, ~10 min per level):
+
+```powershell
+python step10_imatrix.py                                       # Q2_K, Q3_K_M, Q4_K_M, 50 calibration chunks
+python step10_imatrix.py --levels Q2_K --chunks-list 10,200    # calibration-size ablation (not run yet; 200 chunks takes ~75 min)
 ```
 
 ### Side-by-side demo
@@ -165,6 +173,25 @@ Direct weight error on identical tensors (reference = the F16 GGUF), pooled over
   (about 41 dB at int8, 17 dB at int4, vs about 45 and 20 dB elsewhere) and `v_proj` dips in layers 15 and 18. I did not test whether protecting those tensors would help perplexity.
 - Caveat: the paired SE is over 40 windows of one text; the stored ± for llama.cpp's numbers is a different (token-level, unpaired) quantity, so I do not give a paired SE for them.
 
+### Experiment 2: does an importance matrix recover the quality lost at low bit widths?
+
+Hypothesis: llama.cpp's imatrix recovers a large share of the perplexity lost at Q2_K, Q3_K_M and maybe Q4_K_M.
+Setup: calibration text is the first 1,000,000 characters of the WikiText-2 **train** split (the script checks that no test
+paragraph appears in it: 0 found), 50 chunks of 512 tokens, imatrix computed on the F16 model; quantized with
+`llama-quantize --imatrix`; scored on the same 40 x 512-token **test** windows as the main sweep. "Plain" numbers are the
+ones already in `results/perplexity.json`. Gap closed = (plain - imatrix) / (plain - F16).
+
+| Level | Size MB (same with and without) | Plain | With imatrix | Gap closed |
+|---|---|---|---|---|
+| Q2_K | 412 | 12.853 (+45.5%) | 11.056 ± 0.284 (+25.1%) | 45% |
+| Q3_K_M | 523 | 9.571 (+8.3%) | 9.292 ± 0.239 (+5.2%) | 38% |
+| Q4_K_M | 637 | 9.142 (+3.5%) | 8.921 ± 0.229 (+1.0%) | 72% |
+
+- **Expected:** a large share recovered, biggest at the lowest bit width, where plain quantization hurts most.
+- **Measured:** the hypothesis holds only partly. The imatrix closes 38% to 72% of the gap, never all of it, and it is free at inference time (the files are the same size). Q2_K is still +25% worse than F16 even with it.
+- **Surprising:** (1) the share is not monotonic in bit width: Q3_K_M gains the least (38%), Q4_K_M the most (72%). In absolute terms Q2_K gains the most (1.8 perplexity points). I did not investigate why. (2) Q4_K_M with imatrix (+1.0%, 637 MB) is about as good as plain Q5_K_M (+1.1%, 746 MB), and Q3_K_M with imatrix (+5.2%, 523 MB) is not far from plain Q4_K_M (+3.5%, 637 MB).
+- **Caveats:** calibration and test text both come from WikiText-2 (disjoint articles, but the same style), so this probably overstates the gain on text from other domains; I did not test that. One calibration size (50 chunks) and one calibration text per level, so no error bars on the gain itself. The plain files were quantized earlier than the imatrix ones, most likely with the same llama.cpp build (I did not verify that). The calibration-size ablation (10 / 50 / 200 chunks) is supported by the script but I have **not** run it: building the 200-chunk imatrix alone takes over an hour on this machine (the 50-chunk one took 19 minutes).
+
 ## API
 
 | Method | Path | Description |
@@ -201,6 +228,7 @@ bench_worker.py            child process that measures one model
 step4b_perplexity.py       quality via llama-perplexity on WikiText-2
 step5_api.py               FastAPI server
 step6_report.py            tables + RESULTS.md      (report_plots.py = charts)
+step10_imatrix.py          importance-matrix experiment (imatrix_report.py = its RESULTS.md section)
 step9_custom_quant.py      my quantizer: weight error + perplexity (custom_quant.py = the quantizer,
                            custom_quant_eval.py = HF evaluator, gguf_compare.py, custom_quant_report.py)
 step7_load_test.py         API concurrency test

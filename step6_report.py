@@ -20,6 +20,7 @@ import os
 import sys
 
 import custom_quant_report
+import imatrix_report
 from config import ALL_LABELS, REFERENCE_LABEL, results_dir
 
 # "Good enough" quality budget for the recommendation. 5% is an arbitrary choice,
@@ -143,7 +144,7 @@ def load_table(load: dict | None) -> list[str]:
 
 
 def build_markdown(speed: dict, rows: list[dict], load: dict | None, budget_pct: float | None = None,
-                   custom: dict | None = None, ppl: dict | None = None) -> str:
+                   custom: dict | None = None, ppl: dict | None = None, imatrix: dict | None = None) -> str:
     budget = MAX_PPL_INCREASE_PCT if budget_pct is None else budget_pct
     hw, st = speed["hardware"], speed["settings"]
     out = ["# Quantization results: TinyLlama 1.1B", "",
@@ -162,7 +163,7 @@ def build_markdown(speed: dict, rows: list[dict], load: dict | None, budget_pct:
     out += ["## Size, speed and quality", "", *table(rows), "", "![size vs quality](size_vs_quality.png)",
             "![speed vs quality](speed_vs_quality.png)", "", "## Same prompt, every level", "", *samples(speed)]
     out += budget_table(rows) + thread_table(speed) + load_table(load)
-    out += custom_quant_report.report_lines(custom, ppl)
+    out += custom_quant_report.report_lines(custom, ppl) + imatrix_report.report_lines(imatrix)
     out += ["", "## How to read this / caveats", "",
             "- **Perplexity** = how surprised the model is by WikiText-2 text (lower = better). It is a proxy for quality, not a task score.",
             "- **Peak RAM** = highest resident memory of the process. llama.cpp memory-maps the model file, so this includes the model's pages, plus a roughly constant overhead for Python, libraries and the 1024-token KV cache. Compare levels by the differences, not the absolute floor.",
@@ -187,7 +188,7 @@ def main() -> None:
 
     out = results_dir() / "RESULTS.md"
     out.write_text(build_markdown(speed, rows, load_json("load_test.json"), args.budget,
-                                        load_json("custom_quant.json"), ppl), encoding="utf-8")
+                                        load_json("custom_quant.json"), ppl, load_json("imatrix.json")), encoding="utf-8")
     print(f"Wrote {out}")
 
     try:

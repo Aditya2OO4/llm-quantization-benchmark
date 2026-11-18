@@ -1,0 +1,75 @@
+{
+  "calibration": {
+    "source": "WikiText-2 train split (first 1,000,000 chars)",
+    "file": "wiki.train.calib.raw",
+    "test_paragraphs_found_in_calibration": 0,
+    "ctx": 512
+  },
+  "eval": {
+    "text": "wiki.test.raw",
+    "chunks": 40,
+    "ctx": 512
+  },
+  "f16": {
+    "ppl": 8.8357,
+    "ppl_err": 0.22685,
+    "chunks": 40,
+    "ctx": 512
+  },
+  "runs": {
+    "Q2_K": {
+      "plain": {
+        "ppl": 12.8532,
+        "ppl_err": 0.33244,
+        "chunks": 40,
+        "ctx": 512
+      },
+      "imatrix": {
+        "50": {
+          "ppl": 11.0558,
+          "ppl_err": 0.28409,
+          "size_mb": 412.11376953125,
+          "quantize_s": 78.3,
+          "imatrix_s": 1137.5829449000303,
+          "gap_closed_pct": 44.73926571250777
+        }
+      }
+    },
+    "Q3_K_M": {
+      "plain": {
+        "ppl": 9.5706,
+        "ppl_err": 0.24212,
+        "chunks": 40,
+        "ctx": 512
+      },
+      "imatrix": {
+        "50": {
+          "ppl": 9.292,
+          "ppl_err": 0.2386,
+          "size_mb": 523.00048828125,
+          "quantize_s": 56.0,
+          "imatrix_s": 1137.5829449000303,
+          "gap_closed_pct": 37.90991971696834
+        }
+      }
+    },
+    "Q4_K_M": {
+      "plain": {
+        "ppl": 9.1415,
+        "ppl_err": 0.23195,
+        "chunks": 40,
+        "ctx": 512
+      },
+      "imatrix": {
+        "50": {
+          "ppl": 8.9211,
+          "ppl_err": 0.22854,
+          "size_mb": 636.87939453125,
+          "quantize_s": 77.3,
+          "imatrix_s": 1137.5829449000303,
+          "gap_closed_pct": 72.07325049051683
+        }
+      }
+    }
+  }
+}

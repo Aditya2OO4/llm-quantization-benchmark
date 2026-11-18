@@ -86,6 +86,16 @@ Weight error on identical tensors (reference = the F16 GGUF):
 
 ![SQNR by layer and tensor type](custom_quant_layers.png)
 
+## Importance matrix (imatrix) experiment
+
+Calibration: WikiText-2 train split (first 1,000,000 chars); evaluation: WikiText-2 test, 40 x 512 tokens (same as the main sweep). F16 perplexity 8.836. "Gap closed" = share of the quantization loss the imatrix wins back.
+
+| Level | Calibration chunks | Perplexity, no imatrix | Perplexity, with imatrix | vs F16 (plain → imatrix) | Gap closed |
+|---|---|---|---|---|---|
+| Q2_K | 50 | 12.853 | 11.056 ± 0.284 | +45.5% → +25.1% | 45% |
+| Q3_K_M | 50 | 9.571 | 9.292 ± 0.239 | +8.3% → +5.2% | 38% |
+| Q4_K_M | 50 | 9.142 | 8.921 ± 0.229 | +3.5% → +1.0% | 72% |
+
 ## How to read this / caveats
 
 - **Perplexity** = how surprised the model is by WikiText-2 text (lower = better). It is a proxy for quality, not a task score.
