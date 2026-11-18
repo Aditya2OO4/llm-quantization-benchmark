@@ -1,0 +1,43 @@
+{
+  "server": "llamaserver",
+  "max_tokens": 32,
+  "requests_per_level": 24,
+  "threads": 4,
+  "model": "tinyllama-q4km.gguf",
+  "slots": 1,
+  "continuous_batching": true,
+  "levels": [
+    {
+      "concurrency": 1,
+      "requests": 24,
+      "req_per_s": 0.8309758951135299,
+      "tokens_per_s": 26.591228643632956,
+      "p50_s": 1.1338171999668702,
+      "p95_s": 1.4154584999778308
+    },
+    {
+      "concurrency": 2,
+      "requests": 24,
+      "req_per_s": 0.8809435383944438,
+      "tokens_per_s": 28.190193228622203,
+      "p50_s": 2.231322400039062,
+      "p95_s": 2.472041899978649
+    },
+    {
+      "concurrency": 4,
+      "requests": 24,
+      "req_per_s": 0.8329914713196507,
+      "tokens_per_s": 26.65572708222882,
+      "p50_s": 4.651366399950348,
+      "p95_s": 5.524114199972246
+    },
+    {
+      "concurrency": 8,
+      "requests": 24,
+      "req_per_s": 0.8659905339723749,
+      "tokens_per_s": 27.711697087115997,
+      "p50_s": 8.992371100001037,
+      "p95_s": 9.639609700010624
+    }
+  ]
+}

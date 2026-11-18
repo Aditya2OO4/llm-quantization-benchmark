@@ -1,0 +1,41 @@
+{
+  "server": "fastapi",
+  "max_tokens": 32,
+  "requests_per_level": 24,
+  "threads": 4,
+  "model": "tinyllama-q4km.gguf",
+  "levels": [
+    {
+      "concurrency": 1,
+      "requests": 24,
+      "req_per_s": 0.9376771953508405,
+      "tokens_per_s": 30.005670251226896,
+      "p50_s": 1.0220013000071049,
+      "p95_s": 1.275121099955868
+    },
+    {
+      "concurrency": 2,
+      "requests": 24,
+      "req_per_s": 0.9512087838370749,
+      "tokens_per_s": 30.438681082786395,
+      "p50_s": 2.071529900014866,
+      "p95_s": 2.305799499968998
+    },
+    {
+      "concurrency": 4,
+      "requests": 24,
+      "req_per_s": 1.0208370320073963,
+      "tokens_per_s": 32.66678502423668,
+      "p50_s": 3.894882900000084,
+      "p95_s": 3.9973700999980792
+    },
+    {
+      "concurrency": 8,
+      "requests": 24,
+      "req_per_s": 1.00865622043933,
+      "tokens_per_s": 32.27699905405856,
+      "p50_s": 7.904375699989032,
+      "p95_s": 8.039290599990636
+    }
+  ]
+}

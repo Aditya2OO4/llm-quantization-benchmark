@@ -143,8 +143,33 @@ def load_table(load: dict | None) -> list[str]:
     return lines
 
 
+def serving_table(fastapi: dict | None, llama: dict | None, control: dict | None = None) -> list[str]:
+    """FastAPI (one request at a time) vs llama-server with parallel slots; optional 1-slot control."""
+    if not (fastapi and llama):
+        return []
+    n = fastapi["requests_per_level"]
+    lines = ["", "## Does batching help? FastAPI vs llama-server", "",
+             f"Q4_K_M, {fastapi['threads']} threads, {fastapi['max_tokens']} new tokens per request, {n} requests per level. "
+             f"llama-server: {llama.get('slots')} slots + continuous batching"
+             + ("; the control is the same llama-server with 1 slot (no parallel decoding)." if control else "."), ""]
+    cols = [("FastAPI", fastapi), (f"llama-server, {llama.get('slots')} slots", llama)]
+    if control:
+        cols.append(("llama-server, 1 slot (control)", control))
+    lines += ["| Clients | " + " | ".join(f"{name}: req/s | tok/s | p50 s | p95 s" for name, _ in cols) + " |",
+              "|---|" + "---|" * (4 * len(cols))]
+    by = [{x["concurrency"]: x for x in d["levels"]} for _, d in cols]
+    for a_ in fastapi["levels"]:
+        c = a_["concurrency"]
+        if not all(c in m for m in by):
+            continue
+        cells = [f"{m[c]['req_per_s']:.2f} | {m[c]['tokens_per_s']:.1f} | {m[c]['p50_s']:.2f} | {m[c]['p95_s']:.2f}" for m in by]
+        lines.append(f"| {c} | " + " | ".join(cells) + " |")
+    return lines
+
+
 def build_markdown(speed: dict, rows: list[dict], load: dict | None, budget_pct: float | None = None,
-                   custom: dict | None = None, ppl: dict | None = None, imatrix: dict | None = None) -> str:
+                   custom: dict | None = None, ppl: dict | None = None, imatrix: dict | None = None,
+                   serving: tuple[dict | None, ...] = (None, None, None)) -> str:
     budget = MAX_PPL_INCREASE_PCT if budget_pct is None else budget_pct
     hw, st = speed["hardware"], speed["settings"]
     out = ["# Quantization results: TinyLlama 1.1B", "",
@@ -164,6 +189,7 @@ def build_markdown(speed: dict, rows: list[dict], load: dict | None, budget_pct:
             "![speed vs quality](speed_vs_quality.png)", "", "## Same prompt, every level", "", *samples(speed)]
     out += budget_table(rows) + thread_table(speed) + load_table(load)
     out += custom_quant_report.report_lines(custom, ppl) + imatrix_report.report_lines(imatrix)
+    out += serving_table(*serving)
     out += ["", "## How to read this / caveats", "",
             "- **Perplexity** = how surprised the model is by WikiText-2 text (lower = better). It is a proxy for quality, not a task score.",
             "- **Peak RAM** = highest resident memory of the process. llama.cpp memory-maps the model file, so this includes the model's pages, plus a roughly constant overhead for Python, libraries and the 1024-token KV cache. Compare levels by the differences, not the absolute floor.",
@@ -188,7 +214,9 @@ def main() -> None:
 
     out = results_dir() / "RESULTS.md"
     out.write_text(build_markdown(speed, rows, load_json("load_test.json"), args.budget,
-                                        load_json("custom_quant.json"), ppl, load_json("imatrix.json")), encoding="utf-8")
+                                        load_json("custom_quant.json"), ppl, load_json("imatrix.json"),
+                                        (load_json("load_test_fastapi_n24.json"), load_json("load_test_llamaserver.json"),
+                                         load_json("load_test_llamaserver_np1.json"))), encoding="utf-8")
     print(f"Wrote {out}")
 
     try:

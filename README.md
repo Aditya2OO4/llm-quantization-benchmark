@@ -30,6 +30,7 @@ harness: the benchmark orchestration, the RAM and speed methodology, the report,
 |---|---|
 | llama.cpp quantization formats, `llama-quantize`, `llama-perplexity`, GGUF conversion | `custom_quant.py`: block-wise symmetric absmax int8 / int4 quantizer (block 32, fp16 scale per block) in NumPy, with round-trip, zero-block and odd-size handling |
 | `llama-cpp-python` inference, HuggingFace transformers and tokenizer, PyTorch | `custom_quant_eval.py`: runs the HF TinyLlama on my quantized weights (stored compressed, dequantized layer by layer) and scores it with the same window protocol as `llama-perplexity` |
+| llama.cpp's `llama-server` (parallel slots, continuous batching) | `step11_serving_compare.py` + the parametrized `step7_load_test.py`: starts one server at a time, same model, threads, prompt and load generator, plus a 1-slot control |
 | The importance-matrix algorithm itself (`llama-imatrix`, `llama-quantize --imatrix`) | `step10_imatrix.py`: the experiment design (calibration from the train split, a leakage check that refuses to run if any test paragraph is in the calibration text, the same test windows as the main sweep, the "gap closed" metric), run reproducibly |
 | The `gguf` package (only to read llama.cpp's tensors back) | `step9_custom_quant.py`, `gguf_compare.py`: per-tensor MSE and SQNR for every layer, a direct weight-error comparison with llama.cpp's Q8_0 / Q4_0, and the perplexity comparison |
 
@@ -71,6 +72,14 @@ Importance-matrix experiment (about 1 h for the 50-chunk run: ~19 min for the im
 ```powershell
 python step10_imatrix.py                                       # Q2_K, Q3_K_M, Q4_K_M, 50 calibration chunks
 python step10_imatrix.py --levels Q2_K --chunks-list 10,200    # calibration-size ablation (not run yet; 200 chunks takes ~75 min)
+```
+
+Serving comparison (about 10 minutes; one server at a time):
+
+```powershell
+python step11_serving_compare.py                                   # FastAPI vs llama-server, 24 requests per level
+python step11_serving_compare.py --server llamaserver --slots 1 --out load_test_llamaserver_np1.json   # control
+python step6_report.py
 ```
 
 ### Side-by-side demo
@@ -131,7 +140,7 @@ Full report with charts and sample answers: [results/RESULTS.md](results/RESULTS
 | 4 | 0.95 | 30.5 | 4.14 s | 4.23 s |
 | 8 | 0.83 | 26.5 | 5.38 s | 9.63 s |
 
-Throughput stays flat (~27-30 tok/s) while latency grows roughly linearly with the number of clients: one CPU model serves one request at a time, so extra clients just queue. Fixing this needs request batching (as in vLLM). p95 over only 8 requests is essentially the maximum.
+Throughput stays flat (~27-30 tok/s) while latency grows roughly linearly with the number of clients: one CPU model serves one request at a time, so extra clients just queue. My hypothesis was that fixing this needs request batching (as in vLLM). Experiment 3 below tests that. p95 over only 8 requests is essentially the maximum, which is why that experiment uses 24 requests per level.
 
 ## Findings
 
@@ -192,6 +201,27 @@ ones already in `results/perplexity.json`. Gap closed = (plain - imatrix) / (pla
 - **Surprising:** (1) the share is not monotonic in bit width: Q3_K_M gains the least (38%), Q4_K_M the most (72%). In absolute terms Q2_K gains the most (1.8 perplexity points). I did not investigate why. (2) Q4_K_M with imatrix (+1.0%, 637 MB) is about as good as plain Q5_K_M (+1.1%, 746 MB), and Q3_K_M with imatrix (+5.2%, 523 MB) is not far from plain Q4_K_M (+3.5%, 637 MB).
 - **Caveats:** calibration and test text both come from WikiText-2 (disjoint articles, but the same style), so this probably overstates the gain on text from other domains; I did not test that. One calibration size (50 chunks) and one calibration text per level, so no error bars on the gain itself. The plain files were quantized earlier than the imatrix ones, most likely with the same llama.cpp build (I did not verify that). The calibration-size ablation (10 / 50 / 200 chunks) is supported by the script but I have **not** run it: building the 200-chunk imatrix alone takes over an hour on this machine (the 50-chunk one took 19 minutes).
 
+### Experiment 3: is batching the fix for the serialized server?
+
+The README above says the FastAPI server answers one request at a time and that batching would fix it. Test: run llama.cpp's
+`llama-server` with 8 parallel slots and continuous batching on the same Q4_K_M model with the same 4 threads, and load-test both with the
+same generator (24 requests per level, 32 new tokens each, same chat-formatted prompt, `cache_prompt` off so no request gets free prompt reuse). As a
+control, the same `llama-server` with **1 slot** (no parallel decoding), to separate "batching" from "a different server program".
+
+| Clients | FastAPI tok/s (p50 / p95 s) | llama-server 8 slots tok/s (p50 / p95 s) | llama-server 1 slot, control tok/s (p50 / p95 s) |
+|---|---|---|---|
+| 1 | 30.0 (1.02 / 1.28) | 30.0 (1.06 / 1.15) | 26.6 (1.13 / 1.42) |
+| 2 | 30.4 (2.07 / 2.31) | 34.9 (1.82 / 1.95) | 28.2 (2.23 / 2.47) |
+| 4 | 32.7 (3.89 / 4.00) | 44.7 (2.85 / 2.92) | 26.7 (4.65 / 5.52) |
+| 8 | 32.3 (7.90 / 8.04) | 45.0 (5.58 / 5.91) | 27.7 (8.99 / 9.64) |
+
+(Req/s for every row is in `results/RESULTS.md`; raw data in `results/load_test_fastapi_n24.json`, `load_test_llamaserver.json`, `load_test_llamaserver_np1.json`.)
+
+- **Expected:** batching removes the queueing, so throughput should rise with clients and latency should stay roughly flat.
+- **Measured:** batching helps, but only partly. Throughput at 4 and 8 clients is about 45 tok/s vs about 32 for FastAPI (+38%), and p50 at 8 clients falls from 7.9 s to 5.6 s. With one slot, `llama-server` behaves like FastAPI (flat at about 27 tok/s), so the gain comes from batching, not from the server program.
+- **Surprising / honest:** (1) latency still grows with the number of clients (p50 1.06 s at 1 client to 5.58 s at 8); batching raised the ceiling, it did not remove the queue. (2) Throughput stops growing after 4 clients (44.7 to 45.0 at 8): on 4 CPU cores the batched decode is limited by compute and memory bandwidth, not by scheduling. So the claim in my original README, "batching would fix it", was too strong: it gives about 1.4x on this CPU, not a flat-latency server. (3) A single slot of `llama-server` was a little slower than my FastAPI server (about 27 vs 30 to 33 tok/s); I did not investigate why.
+- **Caveats:** one run per configuration, 24 requests per level, so p95 is the 23rd-slowest of 24. The first run of the 1-slot control had one request stall for about two minutes at 1 client (throughput 5.1 tok/s while p50 and p95 were normal), which I treated as a machine hiccup and re-ran; the table shows the re-run. Other programs were open on this 7.2 GB machine, so absolute numbers are noisy, the ratios are more trustworthy.
+
 ## API
 
 | Method | Path | Description |
@@ -228,6 +258,7 @@ bench_worker.py            child process that measures one model
 step4b_perplexity.py       quality via llama-perplexity on WikiText-2
 step5_api.py               FastAPI server
 step6_report.py            tables + RESULTS.md      (report_plots.py = charts)
+step11_serving_compare.py  FastAPI vs llama-server load test (step7_load_test.py takes --format/--url/--out)
 step10_imatrix.py          importance-matrix experiment (imatrix_report.py = its RESULTS.md section)
 step9_custom_quant.py      my quantizer: weight error + perplexity (custom_quant.py = the quantizer,
                            custom_quant_eval.py = HF evaluator, gguf_compare.py, custom_quant_report.py)

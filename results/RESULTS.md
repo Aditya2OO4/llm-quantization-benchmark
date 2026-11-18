@@ -96,6 +96,17 @@ Calibration: WikiText-2 train split (first 1,000,000 chars); evaluation: WikiTex
 | Q3_K_M | 50 | 9.571 | 9.292 ± 0.239 | +8.3% → +5.2% | 38% |
 | Q4_K_M | 50 | 9.142 | 8.921 ± 0.229 | +3.5% → +1.0% | 72% |
 
+## Does batching help? FastAPI vs llama-server
+
+Q4_K_M, 4 threads, 32 new tokens per request, 24 requests per level. llama-server: 8 slots + continuous batching; the control is the same llama-server with 1 slot (no parallel decoding).
+
+| Clients | FastAPI: req/s | tok/s | p50 s | p95 s | llama-server, 8 slots: req/s | tok/s | p50 s | p95 s | llama-server, 1 slot (control): req/s | tok/s | p50 s | p95 s |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 0.94 | 30.0 | 1.02 | 1.28 | 0.94 | 30.0 | 1.06 | 1.15 | 0.83 | 26.6 | 1.13 | 1.42 |
+| 2 | 0.95 | 30.4 | 2.07 | 2.31 | 1.09 | 34.9 | 1.82 | 1.95 | 0.88 | 28.2 | 2.23 | 2.47 |
+| 4 | 1.02 | 32.7 | 3.89 | 4.00 | 1.40 | 44.7 | 2.85 | 2.92 | 0.83 | 26.7 | 4.65 | 5.52 |
+| 8 | 1.01 | 32.3 | 7.90 | 8.04 | 1.41 | 45.0 | 5.58 | 5.91 | 0.87 | 27.7 | 8.99 | 9.64 |
+
 ## How to read this / caveats
 
 - **Perplexity** = how surprised the model is by WikiText-2 text (lower = better). It is a proxy for quality, not a task score.
