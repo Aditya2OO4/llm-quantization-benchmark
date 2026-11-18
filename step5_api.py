@@ -26,7 +26,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from config import default_threads, model_path
+from config import default_threads, format_prompt, model_path
 
 MODEL_PATH = Path(os.environ.get("MODEL_PATH", model_path("Q4_K_M")))
 N_THREADS = default_threads()
@@ -72,6 +72,11 @@ class GenerateRequest(BaseModel):
     max_tokens: int = Field(default=200, ge=1, le=512, description="Maximum tokens to generate.")
     temperature: float = Field(default=0.7, ge=0.0, le=2.0, description="0 = deterministic.")
     stop: list[str] = Field(default=["</s>"], description="Stop generating when one of these appears.")
+    chat: bool = Field(
+        default=False,
+        description="Wrap the prompt in TinyLlama-Chat's template (format_prompt). "
+                    "Use this for questions; leave off for raw text completion.",
+    )
 
 
 class GenerateResponse(BaseModel):
@@ -95,7 +100,8 @@ def generate(req: GenerateRequest) -> GenerateResponse:
     with _infer_lock:
         started = time.perf_counter()
         try:
-            output = llm(req.prompt, max_tokens=req.max_tokens, temperature=req.temperature,
+            prompt = format_prompt(req.prompt) if req.chat else req.prompt
+            output = llm(prompt, max_tokens=req.max_tokens, temperature=req.temperature,
                          stop=req.stop, echo=False)
         except ValueError as exc:  # llama-cpp-python: prompt longer than the context window
             raise HTTPException(status_code=422, detail=str(exc)) from exc

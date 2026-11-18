@@ -57,3 +57,13 @@ def test_health_reports_state(client, monkeypatch):
     monkeypatch.setattr(step5_api, "llm", FakeLlama())
     body = client.get("/health").json()
     assert body["status"] == "ok" and body["process_rss_mb"] > 0
+
+
+def test_chat_flag_applies_chat_template(client, monkeypatch):
+    fake = FakeLlama()
+    monkeypatch.setattr(step5_api, "llm", fake)
+    client.post("/generate", json={"prompt": "What is a CPU?", "chat": True})
+    client.post("/generate", json={"prompt": "What is a CPU?"})
+    chat_prompt, raw_prompt = fake.calls[0][0], fake.calls[1][0]
+    assert chat_prompt == "<|user|>\nWhat is a CPU?</s>\n<|assistant|>\n"
+    assert raw_prompt == "What is a CPU?"  # default behaviour unchanged

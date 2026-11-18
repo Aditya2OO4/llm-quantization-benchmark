@@ -90,3 +90,18 @@ def test_percentile_nearest_rank():
     assert percentile(data, 50) == 5.0
     assert percentile(data, 95) == 10.0
     assert percentile([], 50) == 0.0
+
+
+def test_recommend_budget_is_configurable(speed):
+    rows = step6_report.build_rows(speed, PPL)  # Q4_K_M +2.0%, Q2_K +57%
+    assert step6_report.recommend(rows, 1.0) is None
+    assert step6_report.recommend(rows, 2.5)["label"] == "Q4_K_M"
+    assert step6_report.recommend(rows, 100.0)["label"] == "Q2_K"  # smallest within a loose budget
+
+
+def test_budget_table_lists_each_budget(speed):
+    rows = step6_report.build_rows(speed, PPL)
+    md = "\n".join(step6_report.budget_table(rows))
+    assert "| 2% | none |" in md  # Q4_K_M is +2.0000000000000002% here, just over the 2% budget
+    assert "| 5% | Q4_K_M |" in md and "| 10% | Q4_K_M |" in md
+    assert step6_report.budget_table(step6_report.build_rows(speed, None)) == []

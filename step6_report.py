@@ -14,12 +14,18 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import sys
 
 from config import ALL_LABELS, REFERENCE_LABEL, results_dir
 
-MAX_PPL_INCREASE_PCT = 5.0  # "good enough" quality budget for the recommendation
+# "Good enough" quality budget for the recommendation. 5% is an arbitrary choice,
+# not a standard: override with --budget or $MAX_PPL_INCREASE_PCT, and see
+# budget_table() for what changes at 2% / 5% / 10%.
+MAX_PPL_INCREASE_PCT = float(os.environ.get("MAX_PPL_INCREASE_PCT", 5.0))
+BUDGETS_SHOWN = (2.0, 5.0, 10.0)
 
 
 def load_json(name: str):
@@ -53,11 +59,26 @@ def build_rows(speed: dict, ppl: dict | None) -> list[dict]:
     return rows
 
 
-def recommend(rows: list[dict]) -> dict | None:
+def recommend(rows: list[dict], budget_pct: float | None = None) -> dict | None:
     """Smallest model whose perplexity is within the quality budget of F16."""
+    budget = MAX_PPL_INCREASE_PCT if budget_pct is None else budget_pct
     ok = [r for r in rows if r["label"] != REFERENCE_LABEL and r["ppl_delta_pct"] is not None
-          and r["ppl_delta_pct"] <= MAX_PPL_INCREASE_PCT]
+          and r["ppl_delta_pct"] <= budget]
     return min(ok, key=lambda r: r["size_mb"]) if ok else None
+
+
+def budget_table(rows: list[dict], budgets: tuple[float, ...] = BUDGETS_SHOWN) -> list[str]:
+    """Which level is recommended at each quality budget (shows how arbitrary one budget is)."""
+    if not any(r["ppl_delta_pct"] is not None for r in rows):
+        return []
+    lines = ["", "## Recommendation vs. quality budget", "",
+             "The budget is a judgement call, not a standard. The pick changes with it:", "",
+             "| Max perplexity increase | Picked level | Size MB | vs F16 |", "|---|---|---|---|"]
+    for b in budgets:
+        pick = recommend(rows, b)
+        lines.append(f"| {b:g}% | {pick['label']} | {pick['size_mb']:.0f} | {pick['ppl_delta_pct']:+.1f}% |"
+                     if pick else f"| {b:g}% | none | - | - |")
+    return lines
 
 
 def headline(row: dict) -> str:
@@ -120,7 +141,8 @@ def load_table(load: dict | None) -> list[str]:
     return lines
 
 
-def build_markdown(speed: dict, rows: list[dict], load: dict | None) -> str:
+def build_markdown(speed: dict, rows: list[dict], load: dict | None, budget_pct: float | None = None) -> str:
+    budget = MAX_PPL_INCREASE_PCT if budget_pct is None else budget_pct
     hw, st = speed["hardware"], speed["settings"]
     out = ["# Quantization results: TinyLlama 1.1B", "",
            f"**Hardware:** {hw['cpu']} | {hw['physical_cores']} cores / {hw['logical_cores']} threads "
@@ -130,13 +152,14 @@ def build_markdown(speed: dict, rows: list[dict], load: dict | None) -> str:
     q4 = next((r for r in rows if r["label"] == "Q4_K_M"), None)
     if q4:
         out += [f"**Headline:** {headline(q4)}", ""]
-    best = recommend(rows)
+    best = recommend(rows, budget)
     if best:
         out += [f"**Recommendation:** {best['label']} is the smallest level within "
-                f"{MAX_PPL_INCREASE_PCT:.0f}% of F16 perplexity ({headline(best)}).", ""]
+                f"{budget:g}% of F16 perplexity ({headline(best)}). The {budget:g}% budget is an arbitrary choice; "
+                "see the budget table below.", ""]
     out += ["## Size, speed and quality", "", *table(rows), "", "![size vs quality](size_vs_quality.png)",
             "![speed vs quality](speed_vs_quality.png)", "", "## Same prompt, every level", "", *samples(speed)]
-    out += thread_table(speed) + load_table(load)
+    out += budget_table(rows) + thread_table(speed) + load_table(load)
     out += ["", "## How to read this / caveats", "",
             "- **Perplexity** = how surprised the model is by WikiText-2 text (lower = better). It is a proxy for quality, not a task score.",
             "- **Peak RAM** = highest resident memory of the process. llama.cpp memory-maps the model file, so this includes the model's pages, plus a roughly constant overhead for Python, libraries and the 1024-token KV cache. Compare levels by the differences, not the absolute floor.",
@@ -147,6 +170,10 @@ def build_markdown(speed: dict, rows: list[dict], load: dict | None) -> str:
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--budget", type=float, default=MAX_PPL_INCREASE_PCT,
+                    help="max perplexity increase vs F16, in %% (default 5, or $MAX_PPL_INCREASE_PCT)")
+    args = ap.parse_args()
     speed = load_json("speed.json")
     if not speed:
         sys.exit("results/speed.json not found. Run step4_benchmark.py first.")
@@ -156,7 +183,7 @@ def main() -> None:
     rows = build_rows(speed, ppl)
 
     out = results_dir() / "RESULTS.md"
-    out.write_text(build_markdown(speed, rows, load_json("load_test.json")), encoding="utf-8")
+    out.write_text(build_markdown(speed, rows, load_json("load_test.json"), args.budget), encoding="utf-8")
     print(f"Wrote {out}")
 
     try:

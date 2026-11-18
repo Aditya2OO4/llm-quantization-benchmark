@@ -78,6 +78,10 @@ Takeaways:
 - Q4_K_M uses more RAM than Q5_K_M because llama.cpp repacks its weights into a faster AVX2 layout (+455 MiB, seen in the verbose load log). Its RAM saving over F16 is 43%, not 70%.
 - The speed differences between Q8_0, Q6_K and Q5_K_M are within run-to-run noise.
 
+**Reading the ±.** The perplexity ± is the standard error over the 40 text windows, and it is almost the same for every level (about ±0.23 to ±0.33) because every level is scored on the same text. The *differences* between levels are paired (same windows for every level), so they are more precise than the error bars suggest. Overlapping error bars do not mean "no difference": Q4_K_M is +3.5% over F16 even though the bars overlap.
+
+**The 5% budget is arbitrary.** The recommendation (smallest level within 5% of F16 perplexity) uses a budget I picked, not a standard. It is configurable (`python step6_report.py --budget 2` or `MAX_PPL_INCREASE_PCT=2`), and `RESULTS.md` shows the pick at 2%, 5% and 10%: Q5_K_M, Q4_K_M and Q3_K_M. "Q4_K_M is the sweet spot" is a statement about a 5% budget, not a universal fact.
+
 Full report with charts and sample answers: [results/RESULTS.md](results/RESULTS.md).
 
 ![size vs quality](results/size_vs_quality.png)
@@ -103,8 +107,12 @@ Throughput stays flat (~27-30 tok/s) while latency grows roughly linearly with t
 
 ```bash
 curl -X POST http://127.0.0.1:8000/generate -H "Content-Type: application/json" \
-     -d '{"prompt": "What is model quantization?", "max_tokens": 150}'
+     -d '{"prompt": "What is model quantization?", "max_tokens": 150, "chat": true}'
 ```
+
+`"chat": true` wraps the prompt in TinyLlama-Chat's template (`format_prompt` in `config.py`). The model is a chat
+model, so without it a question is treated as raw text to continue and the answers are much worse. It defaults to
+`false` (raw completion), which keeps the old behaviour.
 
 Response fields: `response`, `tokens_generated`, `tokens_per_second`,
 `inference_ms`, `queue_wait_ms` (time spent waiting for earlier requests),
@@ -135,7 +143,7 @@ results/                   generated: speed.json, perplexity.json, RESULTS.md, *
 ## Tests
 
 ```powershell
-pytest          # 39 tests, no model or GPU needed
+pytest          # 42 tests, no model or GPU needed
 ```
 
 ## Limitations

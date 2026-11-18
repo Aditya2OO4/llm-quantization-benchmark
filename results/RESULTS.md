@@ -5,7 +5,7 @@
 
 **Headline:** Q4_K_M: 70% smaller than F16, 2.2x faster decoding, +3.5% perplexity
 
-**Recommendation:** Q4_K_M is the smallest level within 5% of F16 perplexity (Q4_K_M: 70% smaller than F16, 2.2x faster decoding, +3.5% perplexity).
+**Recommendation:** Q4_K_M is the smallest level within 5% of F16 perplexity (Q4_K_M: 70% smaller than F16, 2.2x faster decoding, +3.5% perplexity). The 5% budget is an arbitrary choice; see the budget table below.
 
 ## Size, speed and quality
 
@@ -33,6 +33,16 @@
 | Q4_K_M | A neural network is a type of artificial intelligence (AI) model that mimics the way the human brain processes information. It consists of a series of interconnected layers of neurons, each of which is responsible for pr |
 | Q3_K_M | A neural network is a mathematical model that simulates the behavior of the human brain. It consists of a series of layers of neurons, each with its own set of connections to other neurons. The layers are connected in a  |
 | Q2_K | A neural network is a mathematical model that maps a set of input data (or "input vector") to a set of output data (or "output vector") to represent a complex or non-linear function. It is a type of artificial intelligen |
+
+## Recommendation vs. quality budget
+
+The budget is a judgement call, not a standard. The pick changes with it:
+
+| Max perplexity increase | Picked level | Size MB | vs F16 |
+|---|---|---|---|
+| 2% | Q5_K_M | 746 | +1.1% |
+| 5% | Q4_K_M | 637 | +3.5% |
+| 10% | Q3_K_M | 523 | +8.3% |
 
 ## Thread scaling (Q4_K_M)
 
