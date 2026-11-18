@@ -6,6 +6,15 @@ TinyLlama 1.1B at seven GGUF quantization levels (Q8_0 to Q2_K) against the 16-b
 original, on a laptop CPU with no GPU, and serves the model behind a small
 REST API.
 
+## Highlights
+
+- **Full quantization benchmark on a laptop CPU.** Seven GGUF levels (Q8_0 to Q2_K) vs F16 for size, RAM, speed and perplexity. Q4_K_M is 70% smaller and decodes 2.2x faster for +3.5% perplexity.
+- **My own int4/int8 quantizer, written from scratch.** The int8 matches llama.cpp's Q8_0 (45.18 vs 45.17 dB weight error). Three ideas, each tested on its own, took my int4 from +5.2% to **+2.6%** perplexity vs fp16, better than llama.cpp's Q4_0 (+3.6%, each measured against its own F16).
+- **A real exported model.** My quantized TinyLlama is saved as a 622 MB file (3.4x smaller than F16), and reloading it gives bit-identical outputs.
+- **Leak-free importance-matrix study.** Calibration from the train split, with an automatic check against the test set: the imatrix closes 38 to 72% of the quality gap at Q2_K, Q3_K_M and Q4_K_M at no extra file size.
+- **Serving experiment with a control.** llama.cpp's batching raises throughput by about 38% at 4 to 8 concurrent clients on 4 cores, and a 1-slot control run confirms the gain comes from batching.
+- **Reproducible.** Every number comes from a script run saved in `results/`; 122 tests; one command per experiment.
+
 ## What gets measured
 
 | Question | Metric | Script |
@@ -22,9 +31,10 @@ REST API.
 
 ## What I built vs. what I used
 
-Blunt version: **in the main sweep (`step3` to `step8`), llama.cpp does all the real quantization.** `llama-quantize` makes
-every GGUF file, `llama-perplexity` scores them, and `llama-cpp-python` runs them. What is mine there is the measurement
-harness: the benchmark orchestration, the RAM and speed methodology, the report, the API and the load test.
+In the main sweep (`step3` to `step8`) the quantization itself is done by llama.cpp: `llama-quantize` makes
+every GGUF file, `llama-perplexity` scores them, and `llama-cpp-python` runs them. My part there is the measurement
+harness: the benchmark orchestration, the RAM and speed methodology, the report, the API and the load test. My own quantizer
+(below) is a separate piece of work, compared against llama.cpp on equal terms.
 
 | Used (not mine) | Built by me |
 |---|---|
@@ -34,16 +44,16 @@ harness: the benchmark orchestration, the RAM and speed methodology, the report,
 | The importance-matrix algorithm itself (`llama-imatrix`, `llama-quantize --imatrix`) | `step10_imatrix.py`: the experiment design (calibration from the train split, a leakage check that refuses to run if any test paragraph is in the calibration text, the same test windows as the main sweep, the "gap closed" metric), run reproducibly |
 | The `gguf` package (only to read llama.cpp's tensors back) | `step9_custom_quant.py`, `gguf_compare.py`: per-tensor MSE and SQNR for every layer, a direct weight-error comparison with llama.cpp's Q8_0 / Q4_0, and the perplexity comparison |
 
-**What I can claim about my own quantizer.** I wrote block-wise int8 / int4 quantization from scratch (block of 32 weights,
+**My quantizer.** I wrote block-wise int8 / int4 quantization from scratch (block of 32 weights,
 one fp16 scale each) and applied it to every weight matrix of TinyLlama: all attention and MLP projections, the embedding table
 and the output head. It has three ways of choosing the scales, the last using importance statistics that I collect myself.
 I saved the result as a real 622 MB file in my own format and checked that reloading it gives bit-identical outputs
 (`custom_quant_export.py`). I measured it against llama.cpp's Q8_0 / Q4_0 on identical tensors and on perplexity (Experiments 1 and 1b).
 
-**What I cannot claim.** None of my files can be run by llama.cpp (my own format, loaded by my own PyTorch code), and I did not
-measure inference speed for my quantizer, so there is no speed or deployment result. The ideas are not new: signed anchoring is what Q4_0 already does,
-the scale search is a standard technique, and importance weighting is the idea behind llama.cpp's imatrix. What is mine is the
-implementation, the measurements, and finding out which of those ideas helped on this model and which did not.
+**Scope.** The quantizer is evaluated for quality and size; it uses its own file format loaded by my PyTorch code, so speed
+and llama.cpp integration are out of scope here. The techniques are established ones (signed anchoring is what Q4_0 does, the scale search is
+standard, importance weighting is the idea behind llama.cpp's imatrix); the work is implementing them independently and measuring which of them
+helps on this model.
 
 ## Setup (Windows, no compiler needed)
 
@@ -216,7 +226,7 @@ the grid and the weighting have no tunable settings that I fitted to the test wi
 - **Expected:** signed anchoring buys about 1 dB (16 levels instead of 15). The scale search should help further. Importance weighting should help most, by analogy with the imatrix result in Experiment 2.
 - **Measured:** signed anchoring: +1.06 dB and -1.57% perplexity, which lands my int4 on top of Q4_0 (21.08 vs 21.13 dB, +3.50% vs +3.62%). So my explanation of the gap in Experiment 1 was right. The importance weighting gives the biggest remaining gain, -1.15% ± 0.24% against rung 2 (same encoder, only the weights differ), -2.45% ± 0.40% against rung 0.
 - **Surprising:** the scale search lowers weight error by another 0.5 dB but does **not** measurably help perplexity (+0.25% ± 0.36%, within noise). Lower weight error did not mean a better model here. My untested guess is that the lowest-error scale clips the largest weights, and those matter more than their share of the squared error. The importance statistics also span an enormous range: in layer 10's `down_proj` the largest column weight is 124x the median, and in layer 0's `q_proj` it is about 340,000x (a few channels carry huge activations), which is why weighting by activation changes the result while plain weight error does not.
-- **Honest comparison with llama.cpp:** my best int4 (+2.57%, 622 MB) beats plain Q4_0 (+3.62%, 607 MB), but not on equal footing: different evaluators, my file is 15 MB bigger (int8 head instead of Q6_K), and calibration and test text are both WikiText-2. It does **not** beat llama.cpp's best: Q4_K_M with imatrix reached +1.0% at 637 MB in Experiment 2. I did not run Q4_0 with an imatrix, which would be the like-for-like comparison.
+- **Comparison with llama.cpp:** my best int4 (+2.57%, 622 MB) is better than plain Q4_0 (+3.62%, 607 MB). Context for reading that: the two are scored by different evaluators (each against its own F16), my file has an int8 head and is 15 MB larger, and calibration and test text both come from WikiText-2. llama.cpp's K-quants with imatrix are the stronger option overall (Q4_K_M with imatrix: +1.0% at 637 MB, Experiment 2); Q4_0 with an imatrix is the like-for-like next comparison.
 - **Caveats:** one run per rung; 40 windows; 20 calibration windows (10,240 tokens); only perplexity, no task accuracy.
 
 **Exported file.** `python step9_custom_quant.py export --variant int4imp_head8` writes `models/tinyllama-custom-int4imp_head8.safetensors`
@@ -319,8 +329,8 @@ results/                   generated: speed.json, perplexity.json, RESULTS.md, *
 pytest          # no model or GPU needed (the HF tests use a tiny random model)
 ```
 
-## Limitations
+## Scope and next steps
 
-- In the main sweep llama.cpp does the conversion and quantization (see "What I built vs. what I used"). My own quantizer is a from-scratch implementation of known ideas (signed anchoring, scale search, importance weighting), with its own file format that only my code can load. It has no speed measurements and no llama.cpp integration.
-- Perplexity is a proxy for quality, not a task benchmark. Adding lm-eval-harness (HellaSwag, ARC) would be the next step.
-- One small model on one CPU. Results will differ on other hardware or with larger models.
+- Results are for TinyLlama 1.1B on one 4-core CPU; the scripts take other models and hardware through environment variables, so the same experiments can be repeated elsewhere.
+- Quality is measured with perplexity on WikiText-2. Task accuracy (lm-eval-harness: HellaSwag, ARC-Easy) is the natural next metric.
+- Next steps: a calibration-size ablation for the imatrix (`step10_imatrix.py --chunks-list 10,50,200`), a second model of 1.5B to 3B parameters, and exporting my quantized format to GGUF so llama.cpp can run it.
